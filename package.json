@@ -1,0 +1,22 @@
+{
+  "name": "woonebo-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mongodb": "^2.2.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://PR_Lim@bitbucket.org/woonebo/woonebo-server.git"
+  },
+  "author": "lim",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/woonebo/woonebo-server#readme"
+}
