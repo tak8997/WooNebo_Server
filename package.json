@@ -1,7 +1,6 @@
 {
   "name": "woonebo-server",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "dependencies": {
     "express": "^4.14.0",
@@ -18,5 +17,6 @@
   },
   "author": "lim",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/woonebo/woonebo-server#readme"
+  "homepage": "https://bitbucket.org/woonebo/woonebo-server#readme",
+  "description": ""
 }
