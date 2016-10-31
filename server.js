@@ -1,8 +1,16 @@
+var https = require('https');
+var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var router = require('./router');
 var errorHandler = require('./errorHandler');
+var key = fs.readFileSync('./key.pem');
+var cert = fs.readFileSync('./cert.pem');
+var options = {
+    key: key,
+    cert: cert
+};
 
 //요청 REST 로그
 app.use(function(req, res, next) {
@@ -23,5 +31,9 @@ for (key in errorHandler) {
 
 //Listen
 app.listen(3000, function() {
-    console.log('Server started, localhost:3000');
+    console.log("server started, localhost:3000");
 });
+
+// https.createServer(options, app).listen(3000, function() {
+//     console.log('Server started, localhost:3000');
+// });

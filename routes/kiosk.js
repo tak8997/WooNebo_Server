@@ -1,6 +1,7 @@
 var express = require('express');
 var kiosk = express();
 var moment = require('moment');
+var distance = require('gps-distance');
 var db = require('../mysql');
 
 
@@ -8,22 +9,30 @@ module.exports = kiosk;
 
 //현재 위치나 BLE를 기반으로 하여 키오스크의 정보를 요청받는 REST
 kiosk.get('/', function(req, res) {
-    var sql = "select id, description from kiosks";
-    var sendResult = {};
+    var sql = "select id, description, lat, lng from kiosks";
+    var lat = req.query.lat;
+    var lng = req.query.lng;
+    var maxDistance = 10;
+    var result = {};
 
     db.query(sql, function (err, rows, fields) {
-        sendResult.counts = rows.length;
+        result.counts = rows.length;
 
-        sendResult.kiosks = [];
+        result.kiosks = [];
 
         for (i=0; i<rows.length; i++) {
-            sendResult.kiosks[i] = {
+            if (distance(rows[i].lat, rows[i].lng, lat, lng) <= maxDistance) {
+                //To Do
+            }
+
+            result.kiosks[i] = {
                 id: rows[i].id,
                 desc: rows[i].description
             };
         }
 
-        res.json(sendResult);
+        res.json(result);
+        res.end();
     });
 });
 
@@ -38,35 +47,29 @@ kiosk.get('/:id/products', function(req, res) {
             + "and k.id = ? ";
 
     db.query(sql, kioskId, function(err, rows) {
-        var result, now, diff, period, index;
+        var period, index;
+        var now = moment(Date.now());
 
-        if (err) {
-            throw err;
-        }
+        if (err) throw err;
 
         if (rows.length === 0) {
             res.sendStatus(411).send("Invalid Parameters");
+            res.end();
         }
 
         //마지막 재생 시간부터 요청 시간 까지의 차이를 계산
         lastPlayTime = moment(rows[0].last_play_at, moment.ISO_8601);
-        now = moment(Date.now());
         period = Math.round(moment.duration(now.diff(lastPlayTime)).asSeconds());
 
-
-        //시간 차이와 삼품의 미디어 실행 시간을 조회하여 현재 재생되는 상품을 탐색
-        index = 0;
-        diff = period - rows[0].play_time_at;
-
+        //시간 차이와 삼품의 미디어 실행 시간을 비교하여 현재 재생되는 상품을 탐색
         for (i=0; i<rows.length; i++) {
-            if (diff > period - rows[i].play_time_at) {
+            if (period > rows[i].play_time_at) {
                 index = i;
-                diff = period - rows[i].play_time_at;
             }
         }
 
         //결과를 json객체로 생성
-        result = {};
+        var result = {};
         result.id = rows[index].id;
         result.product_name = rows[index].product_name;
         result.description = rows[index].description;
@@ -74,6 +77,7 @@ kiosk.get('/:id/products', function(req, res) {
         result.url = rows[index].url;
 
         res.json(result);
+        res.end();
     });
 });
 
@@ -94,7 +98,7 @@ kiosk.post('/:id/play', function(req, res) {
     db.beginTransaction(function(err) {
         if (err) throw err;
 
-        //play_infos 테이블에 로그
+        //play_infos 테이블에 기록
         db.query(insertSql, [fileName, kioskId, playAt], function(err, results) {
             if (err) {
                 return db.rollback(function() {
@@ -104,7 +108,7 @@ kiosk.post('/:id/play', function(req, res) {
             }
 
             //kiosks 테이블에 현재 재생 파일과 시작 시간 변경
-            db.query(updateSql, [now, now, fileName, kioskId], function(err, result) {
+            db.query(updateSql, [now, playAt, fileName, kioskId], function(err, result) {
                 if (err) {
                     return db.rollback(function() {
                         res.writeHead(411);
@@ -112,7 +116,7 @@ kiosk.post('/:id/play', function(req, res) {
                     });
                 }
 
-                //DB에 커밋
+                //커밋
                 db.commit(function(err) {
                     if (err) {
                         return db.rollback(function() {
