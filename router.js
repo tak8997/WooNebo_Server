@@ -1,5 +1,5 @@
 var express = require('express');
-var kiosk = require('./route/kiosk');
+var kiosk = require('./routes/kiosk');
 var router = express.Router();
 
 module.exports = router;
