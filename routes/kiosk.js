@@ -6,6 +6,7 @@ var db = require('../mysql');
 
 module.exports = kiosk;
 
+//현재 위치나 BLE를 기반으로 하여 키오스크의 정보를 요청받는 REST
 kiosk.get('/', function(req, res) {
     var sql = "select id, description from kiosks";
     var sendResult = {};
@@ -26,6 +27,7 @@ kiosk.get('/', function(req, res) {
     });
 });
 
+//키오스크에서 재생되는 상품의 상세 정보를 요청받는 REST
 kiosk.get('/:id/products', function(req, res) {
     var kioskId = Number.parseInt(req.params.id);
     var currentTime = Date.now();
@@ -46,20 +48,24 @@ kiosk.get('/:id/products', function(req, res) {
             res.sendStatus(411).send("Invalid Parameters");
         }
 
+        //마지막 재생 시간부터 요청 시간 까지의 차이를 계산
         lastPlayTime = moment(rows[0].last_play_at, moment.ISO_8601);
         now = moment(Date.now());
         period = Math.round(moment.duration(now.diff(lastPlayTime)).asSeconds());
 
+
+        //시간 차이와 삼품의 미디어 실행 시간을 조회하여 현재 재생되는 상품을 탐색
         index = 0;
         diff = period - rows[0].play_time_at;
 
         for (i=0; i<rows.length; i++) {
-            if (diff < period - rows[i].play_time_at) {
+            if (diff > period - rows[i].play_time_at) {
                 index = i;
                 diff = period - rows[i].play_time_at;
             }
         }
 
+        //결과를 json객체로 생성
         result = {};
         result.id = rows[index].id;
         result.product_name = rows[index].product_name;
@@ -67,6 +73,58 @@ kiosk.get('/:id/products', function(req, res) {
         result.price = rows[index].price;
         result.url = rows[index].url;
 
-        res.send(result);
+        res.json(result);
+    });
+});
+
+//키오스크가 현재 재생 정보를 보내는 REST
+kiosk.post('/:id/play', function(req, res) {
+    var kioskId = req.params.id;
+    var fileName = req.body.fileName;
+    var playAt = req.body.playAt;
+    var now = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
+    var updateSql = "update kiosks "
+                    + "set update_at = ?, last_play_at = ?, last_play_file_id = (select id from media_files where file_name = ?)"
+                    + "where id = ? ";
+
+    var insertSql = "insert into play_infos(file_id, kiosk_id, play_at) "
+                    + "values((select id from media_files where file_name = ?), ?, ?)";
+
+    //Tracsaction 으로 진행
+    db.beginTransaction(function(err) {
+        if (err) throw err;
+
+        //play_infos 테이블에 로그
+        db.query(insertSql, [fileName, kioskId, playAt], function(err, results) {
+            if (err) {
+                return db.rollback(function() {
+                    res.writeHead(411);
+                    res.end();
+                });
+            }
+
+            //kiosks 테이블에 현재 재생 파일과 시작 시간 변경
+            db.query(updateSql, [now, now, fileName, kioskId], function(err, result) {
+                if (err) {
+                    return db.rollback(function() {
+                        res.writeHead(411);
+                        res.end();
+                    });
+                }
+
+                //DB에 커밋
+                db.commit(function(err) {
+                    if (err) {
+                        return db.rollback(function() {
+                            res.writeHead(500);
+                            res.end();
+                        });
+                    }
+
+                    res.writeHead(200);
+                    res.end();
+                });
+            });
+        });
     });
 });

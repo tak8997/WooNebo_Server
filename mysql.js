@@ -1,8 +1,8 @@
 var mysql = require('mysql');
-var dbConn = mysql.createConnection({
+var connection = mysql.createConnection({
     user    : 'woonebo',
     password: 'dbmysql',
     database: 'woonebo'
 });
 
-module.exports = dbConn;
+module.exports = connection;
