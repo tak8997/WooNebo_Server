@@ -34,10 +34,8 @@ app.all("*", function(req, res) {
     res.end();
 });
 
-//에러 처리
-for (key in errorHandler) {
-    app.use(errorHandler[key]);
-}
+//Unhandling 에러 처리
+app.use(errorHandler);
 
 //Listen
 app.listen(3000, function() {

@@ -1,5 +1,5 @@
 var express = require('express');
-var kiosk = express();
+var kiosk = express.Router();
 var moment = require('moment');
 var distance = require('gps-distance');
 var db = require('../mysql');
@@ -43,7 +43,7 @@ kiosk.get('/', function(req, res) {
 
 //키오스크에서 재생되는 상품의 상세 정보를 요청받는 REST
 kiosk.get('/:id/products', function(req, res) {
-    req.checkParams('id', 'Invalid kiosk id').isInt();
+    req.checkParams('id', 'Invalid kiosk id').notEmpty().isInt();
 
     var errors = req.validationErrors();
 
@@ -89,7 +89,7 @@ kiosk.get('/:id/products', function(req, res) {
         //결과를 json객체로 생성
         var result = {};
         result.id = rows[index].id;
-        result.product_name = rows[index].product_name;
+        result.name = rows[index].product_name;
         result.description = rows[index].description;
         result.price = rows[index].price;
         result.url = rows[index].url;
@@ -102,8 +102,8 @@ kiosk.get('/:id/products', function(req, res) {
 //키오스크가 현재 재생 정보를 보내는 REST
 kiosk.post('/:id/play', function(req, res) {
     req.checkParams('id', 'Invalid kiosk id').isInt();
-    req.checkBody('fileName', 'Invalid fileName').notEmpty().isString();
-    // req.checkBody('playAt', 'Invalid datetime (playAt)').
+    req.checkBody('fileName', 'Invalid filename').notEmpty('Empty filename').isString();
+    req.checkBody('playAt', 'Empty datetime parameter').notEmpty();
 
     var errors = req.validationErrors();
     if (errors) {
@@ -111,9 +111,17 @@ kiosk.post('/:id/play', function(req, res) {
         res.end();
     }
 
+    var playAt = moment(req.body.playAt);
     var kioskId = req.params.id;
     var fileName = req.body.fileName;
-    var playAt = req.body.playAt;
+
+    if (!playAt.isValid()) {
+        res.send("Invalid Datetime", 411);
+        res.end();
+    } else {
+        playAt = playAt.format("YYYY-MM-DD HH:mm:ss");
+    }
+
     var now = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
     var updateSql = "update kiosks "
                     + "set update_at = ?, last_play_at = ?, last_play_file_id = (select id from media_files where file_name = ?)"
@@ -127,7 +135,7 @@ kiosk.post('/:id/play', function(req, res) {
         if (err) throw err;
 
         //play_infos 테이블에 기록
-        db.query(insertSql, [fileName, kioskId, playAt], function(err, results) {
+        db.query(insertSql, [fileName, kioskId, playAt], function(err) {
             if (err) {
                 return db.rollback(function() {
                     res.writeHead(411);
@@ -136,7 +144,7 @@ kiosk.post('/:id/play', function(req, res) {
             }
 
             //kiosks 테이블에 현재 재생 파일과 시작 시간 변경
-            db.query(updateSql, [now, playAt, fileName, kioskId], function(err, results) {
+            db.query(updateSql, [now, playAt, fileName, kioskId], function(err) {
                 if (err) {
                     return db.rollback(function() {
                         res.writeHead(411);
