@@ -1,0 +1,47 @@
+var Sequelize = require('sequelize');
+var options = {
+    timezone: '+09:00',
+    logging: false
+}
+var sequelize = new Sequelize('mysql://woonebo:dbmysql@localhost:3306/woonebo', options);
+
+//load models
+var models = [
+    'admin',
+    'kiosk',
+    'user',
+    'mediaFile',
+    'mediaFileConfig',
+    'product',
+    'searchLog',
+    'playInfo'
+];
+models.forEach(function(model) {
+    module.exports[model] = sequelize.import('./' + model);
+});
+
+//테이블 관계 정의
+(function(m) {
+    m.admin.hasMany(m.kiosk, { foreignKey: 'register' });
+    m.admin.hasMany(m.product, { foreignKey: 'register' });
+    m.admin.hasMany(m.mediaFile, { foreignKey: 'register' });
+    m.kiosk.hasMany(m.playInfo, { foreignKey: 'kiosk_id' });
+    m.mediaFile.hasMany(m.kiosk, { foreignKey: 'last_play_file_id' });
+    m.mediaFile.hasMany(m.mediaFileConfig, { foreignKey: 'file_id' });
+    m.mediaFile.hasMany(m.playInfo, { foreignKey: 'file_id' });
+    m.user.hasMany(m.searchLog, { foreignKey: 'user_id' });
+    m.product.hasMany(m.searchLog, { foreignKey: 'product_id' });
+    m.product.hasMany(m.mediaFileConfig, { foreignKey: 'product_id' });
+})(module.exports);
+
+sequelize
+    .authenticate()
+    .then(function(err) {
+        console.log("DB is connected!!");
+    })
+    .catch(function(err) {
+        console.log("Unable to connect to the database: ", err);
+    });
+
+
+module.exports.sequelize = sequelize;
