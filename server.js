@@ -13,19 +13,21 @@ var errorHandler = require('./errorHandler');
 //     cert: cert
 // };
 
+//use template engine ejs
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 //요청 REST 로그
 app.use(function(req, res, next) {
     console.log(req.method + ' ' + req.originalUrl);
     next();
 });
 
-//use json body-parser
+//use body-parser
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-//use express-validator
-app.use(validator());
-
-//라우터 사용
+//라우터 등록
 app.use(router);
 
 //정의 되지 않은 페이지 오류
