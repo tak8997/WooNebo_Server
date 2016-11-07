@@ -1,0 +1,25 @@
+<%
+    layout('layout')
+    script('/js/jquery.js')
+    script('/js/bootstrap.min.js')
+    stylesheet('/css/style.css')
+    stylesheet('/css/bootstrap.min.css')
+%>
+<div class="container">
+    <div class="row">
+        <div class="">
+            <form action="login" method="POST">
+                <div>
+                    <input name="email" value="test@promptech.co.kr" />
+                </div>
+                <div>
+                    <input name="password" value="b3e45e50d793055815699d5831357ec56436004abde1596a8972d240ea5c1318" />
+                </div>
+                <div>
+                    <input type="submit" />
+                </div>
+            </form>
+            <button onclick="location.href='/admins/facebook'">facebook</button>
+        </div>
+    </div>
+</div>

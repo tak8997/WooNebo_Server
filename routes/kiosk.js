@@ -12,7 +12,7 @@ var gps_maxDiatance = 100;
 module.exports = kiosk;
 
 //현재 위치나 BLE를 기반으로 하여 키오스크의 정보를 요청받는 REST
-kiosk.get('/', function(req, res) {
+kiosk.get('/', ensureAuthentication, function(req, res) {
     let options = { where: {} };
 
     //ble파라미터 존재 시
@@ -73,7 +73,7 @@ kiosk.get('/', function(req, res) {
 });
 
 //키오스크에서 재생되는 상품의 상세 정보를 요청받는 REST
-kiosk.get('/:id/products', function(req, res) {
+kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
     let kioskId = Number.parseInt(req.params.id);
 
     //키오스크 id를 통해 현재 실행중인 파일 조회
@@ -184,3 +184,15 @@ kiosk.post('/:id/play', function(req, res) {
         res.end();
     });
 });
+
+
+function ensureAuthentication(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        return next();
+        
+        res.status(401).json({ error: "Unauthorized" })
+        res.end();
+    }
+}
