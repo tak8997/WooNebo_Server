@@ -45,9 +45,9 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
         }
     } else {
 
-        //ble 또는 gps 파라미터가 없을 시
-        res.status(411);
-        res.end();
+        // //ble 또는 gps 파라미터가 없을 시
+        // res.status(411);
+        // res.end();
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
@@ -191,7 +191,7 @@ function ensureAuthentication(req, res, next) {
         return next();
     } else {
         return next();
-        
+
         res.status(401).json({ error: "Unauthorized" })
         res.end();
     }
