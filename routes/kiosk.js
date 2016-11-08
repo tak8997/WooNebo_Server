@@ -74,20 +74,21 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
         attributes: ['id', 'description', 'last_play_at'],
         raw: true
     }).then(function(kiosks) {
-        let result = { kiosks: {}, counts: 0 };
+        let result = { kiosks: [], counts: 0 };
+        let list = {};
         let playTimeAts = {};
         let length = 0;
 
         //현재 재생 상품에 맞게 매핑
         kiosks.map(function(obj) {
-            if (!result.kiosks[obj.id]) {
+            if (!list[obj.id]) {
                 let playAt = moment(obj.last_play_at);
                 let playTimeAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
                 let duration = moment(Date.now()).diff(playAt, 'seconds');
 
                 //재생되지 않은 상품인지 확인
                 if ((duration - playTimeAt) >= 0) {
-                    result.kiosks[obj.id] = {
+                    list[obj.id] = {
                         desc: obj.description,
                         product_name: obj['mediaFile.mediaFileConfigs.product.name'],
                         product_image: obj['mediaFile.mediaFileConfigs.product.image'],
@@ -103,7 +104,7 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
 
                 //현재 재생되지 않았고 기록해 놨던 상품보다 나중에 재생되는 상품인지 확인
                 if (((duration - playTimeAt) >= 0) && (playTimeAt > playTimeAts[obj.id])) {
-                    result.kiosks[obj.id] = {
+                    list[obj.id] = {
                         desc: obj.description,
                         product_name: obj['mediaFile.mediaFileConfigs.product.name'],
                         product_image: obj['mediaFile.mediaFileConfigs.product.image'],
@@ -114,11 +115,19 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
             }
         });
 
+        //최종 결과 생성
+        for(let id in list) {
+            list[id].id = id;
+            result.kiosks.push(list[id]);
+        }
+
         //성공
         result.counts = length;
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
+
+        console.log(err);
 
         //에러
         res.status(411);
