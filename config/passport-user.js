@@ -22,7 +22,7 @@ passport.use('user-local', new LocalStrategy({
             raw: true
         }).then(function(user) {
             if (!user) return callback(null, false);
-            if (user.password !== password) return callback(null, false);
+            if (user.password !== sha256(password)) return callback(null, false);
 
             models.user.update({
                 last_login_at: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -65,6 +65,7 @@ passport.use(new TokenFacebookStrategy({
             });
 
             return callback(null, user);
+            
         }).catch(function(err) {
             callback(err);
         });

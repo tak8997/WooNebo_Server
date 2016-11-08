@@ -32,6 +32,16 @@ models.forEach(function(model) {
     m.user.hasMany(m.searchLog, { foreignKey: 'user_id' });
     m.product.hasMany(m.searchLog, { foreignKey: 'product_id' });
     m.product.hasMany(m.mediaFileConfig, { foreignKey: 'product_id' });
+
+    m.kiosk.belongsTo(m.admin, { foreignKey: 'register' });
+    m.kiosk.belongsTo(m.mediaFile, { foreignKey: 'last_play_file_id' });
+    m.mediaFile.belongsTo(m.admin, { foreignKey: 'register' });
+    m.mediaFileConfig.belongsTo(m.mediaFile, { foreignKey: 'file_id' });
+    m.mediaFileConfig.belongsTo(m.product, { foreignKey: 'product_id' });
+    m.playInfo.belongsTo(m.mediaFile, { foreignKey: 'file_id' });
+    m.playInfo.belongsTo(m.kiosk, { foreignKey: 'kiosk_id' });
+    m.searchLog.belongsTo(m.user, { foreignKey: 'user_id' });
+    m.searchLog.belongsTo(m.product, { foreignKey: 'product_id' });
 })(module.exports);
 
 sequelize

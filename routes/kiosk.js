@@ -51,17 +51,71 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
-    models.kiosk.findAll(options).then(function(rows) {
-        let result = {};
+    models.kiosk.findAll({
+        options,
+        include: [{
 
-        //조회 결과가 없을 경우 에러 처리
-        if (rows.length === 0) throw null;
+            //join media_files table
+            model: models.mediaFile,
+            include: [{
 
-        //결과값 기록
-        result.count = rows.length;
-        result.kiosks = rows.map(function(obj) { return { id: obj.id, desc: obj.description }});
+                //join media_file_configs table
+                model: models.mediaFileConfig,
+                include: [{
+
+                    //join products table
+                    model: models.product,
+                    attributes: [['product_name', 'name'], 'description', 'image']
+                }],
+                attributes: ['play_time_at']
+            }],
+            attributes: []
+        }],
+        attributes: ['id', 'description', 'last_play_at'],
+        raw: true
+    }).then(function(kiosks) {
+        let result = { kiosks: {}, counts: 0 };
+        let playTimeAts = {};
+        let length = 0;
+
+        //현재 재생 상품에 맞게 매핑
+        kiosks.map(function(obj) {
+            if (!result.kiosks[obj.id]) {
+                let playAt = moment(obj.last_play_at);
+                let playTimeAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
+                let duration = moment(Date.now()).diff(playAt, 'seconds');
+
+                //재생되지 않은 상품인지 확인
+                if ((duration - playTimeAt) >= 0) {
+                    result.kiosks[obj.id] = {
+                        desc: obj.description,
+                        product_name: obj['mediaFile.mediaFileConfigs.product.name'],
+                        product_image: obj['mediaFile.mediaFileConfigs.product.image'],
+                        product_desc: obj['mediaFile.mediaFileConfigs.product.description']
+                    };
+                    playTimeAts[obj.id] = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
+                    length++;
+                }
+            } else {
+                let playAt = moment(obj.last_play_at);
+                let playTimeAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
+                let duration = moment(Date.now()).diff(playAt, 'seconds');
+
+                //현재 재생되지 않았고 기록해 놨던 상품보다 나중에 재생되는 상품인지 확인
+                if (((duration - playTimeAt) >= 0) && (playTimeAt > playTimeAts[obj.id])) {
+                    result.kiosks[obj.id] = {
+                        desc: obj.description,
+                        product_name: obj['mediaFile.mediaFileConfigs.product.name'],
+                        product_image: obj['mediaFile.mediaFileConfigs.product.image'],
+                        product_desc: obj['mediaFile.mediaFileConfigs.product.description']
+                    };
+                    playTimeAts[obj.id] = obj['mediaFile.mediaFileConfigs.play_time_at'];
+                }
+            }
+        });
 
         //성공
+        result.counts = length;
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
@@ -77,44 +131,62 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
     let kioskId = Number.parseInt(req.params.id);
 
     //키오스크 id를 통해 현재 실행중인 파일 조회
-    models.kiosk.findOne({
+    models.kiosk.findAll({
         where: {
             id: kioskId
         },
-        attributes: [['last_play_at', 'playAt'], ['last_play_file_id', 'fileId']],
+        include: [{
+
+            //join media_files table
+            model: models.mediaFile,
+            include: [{
+
+                //join media_file_configs table
+                model: models.mediaFileConfig,
+                include: [{
+
+                    //join products table
+                    model: models.product,
+                    attributes: [['product_name', 'name'], 'price', 'description', 'url']
+                }],
+                attributes: ['play_time_at']
+            }],
+            attributes: []
+        }],
+        attributes: ['last_play_at'],
         raw: true
-    }).then(function(result) {
-        let fileId = result.fileId;
-        let playAt = moment(result.playAt);
-        let duration = moment(Date.now()).diff(playAt, 'seconds');
+    }).then(function(products) {
 
-        //파일 아이디와 파일의 실행 시간을 통해 현재 광고중인 상품을 조회
-        models.mediaFileConfig.findOne({
-            where: {
-                file_id: fileId,
-                play_time_at: {
-                    $lt: duration
-                }
-            },
-            order: [['play_time_at', 'DESC']],
-            attributes: [['product_id', 'productId']],
-            raw: true
-        }).then(function(result) {
+        //키오스크 재생으로부터 지난 시간
+        let duration = moment(Date.now()).diff(products[0].last_play_at, 'seconds');
 
-            //상품의 상세 정보를 조회
-            models.product.findOne({
-                where: {
-                    id : result.productId
-                },
-                attributes: ['id', ['product_name', 'name'], 'price', ['description', 'desc'], 'url'],
-                raw: true
-            }).then(function(result) {
+        //현재 시점에 재생 되고 있는 상품 선택
+        let product = products.reduce(function(memo, obj) {
+            let after = duration - Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
+            let before = duration - Number.parseInt(memo['mediaFile.mediaFileConfigs.play_time_at']);
 
-                //성공 시 상품 상세정보 전송
-                res.status(200).json(result);
-            });
-        });
+            if ((after >= before) && (after >= 0)) {
+                return obj;
+            } else {
+                return memo;
+            }
+        }, { 'mediaFile.mediaFileConfigs.play_time_at': 0 });
+
+        //결과로 보내 줄 파라미터 매핑
+        let result = {
+            id: product['mediaFile.mediaFileConfigs.product.id'],
+            name: product['mediaFile.mediaFileConfigs.product.name'],
+            price: product['mediaFile.mediaFileConfigs.product.price'],
+            desc: product['mediaFile.mediaFileConfigs.product.description'],
+            url: product['mediaFile.mediaFileConfigs.product.url']
+        };
+
+        //성공
+        res.status(200).json(result);
+        res.end();
     }).catch(function(err) {
+
+        console.log(err);
 
         //실패
         res.status(411);
@@ -179,20 +251,24 @@ kiosk.post('/:id/play', function(req, res) {
             t.rollback();
             next();
         });
+
     }).catch(function(err) {
+
+        //에러 처리
         res.status(411);
         res.end();
     });
 });
 
 
+//인증여부 세션 검사
 function ensureAuthentication(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     } else {
         return next();
 
-        res.status(401).json({ error: "Unauthorized" })
-        res.end();
+        // res.status(401);
+        // res.end();
     }
 }

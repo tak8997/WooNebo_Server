@@ -1,25 +1,23 @@
 <%
     layout('layout')
-    script('/js/jquery.js')
-    script('/js/bootstrap.min.js')
-    stylesheet('/css/style.css')
-    stylesheet('/css/bootstrap.min.css')
+    stylesheet('/css/login.css')
 %>
 <div class="container">
     <div class="row">
-        <div class="">
-            <form action="login" method="POST">
-                <div>
-                    <input name="email" value="test@promptech.co.kr" />
+        <div class="col-center">
+            <form class="form-login" action="login" method="POST">
+                <div class="input-group">
+                    <span class="input-group-addon">Email</span>
+                    <input class="form-control" type="email" name="email" value="" />
                 </div>
-                <div>
-                    <input name="password" value="b3e45e50d793055815699d5831357ec56436004abde1596a8972d240ea5c1318" />
+                <div class="input-group">
+                    <span class="input-group-addon">Password</span>
+                    <input class="form-control" type="password" name="password" value="" />
                 </div>
-                <div>
+                <div class="input-group">
                     <input type="submit" />
                 </div>
             </form>
-            <button onclick="location.href='/admins/facebook'">facebook</button>
         </div>
     </div>
 </div>

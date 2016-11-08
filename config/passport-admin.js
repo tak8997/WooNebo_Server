@@ -1,6 +1,5 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var FacebookStrategy  = require('passport-facebook').Strategy;
 var moment = require('moment');
 var sha256 = require('sha256');
 
@@ -21,7 +20,7 @@ passport.use('admin-local', new LocalStrategy({
             raw: true
         }).then(function(admin) {
             if (!admin) return callback(null, false);
-            if (admin.password !== password) return callback(null, false);
+            if (admin.password !== sha256(password)) return callback(null, false);
 
             models.admin.update({
                 last_login_at: moment().format('YYYY-MM-DD HH:mm:ss')
