@@ -127,8 +127,6 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
         res.end();
     }).catch(function(err) {
 
-        console.log(err);
-
         //에러
         res.status(411);
         res.end();
@@ -156,7 +154,7 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
 
                     //join products table
                     model: models.product,
-                    attributes: [['product_name', 'name'], 'price', 'description', 'url']
+                    attributes: [['product_name', 'name'], 'price', 'description', 'image', 'url']
                 }],
                 attributes: ['play_time_at']
             }],
@@ -174,7 +172,7 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
             let after = duration - Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
             let before = duration - Number.parseInt(memo['mediaFile.mediaFileConfigs.play_time_at']);
 
-            if ((after >= before) && (after >= 0)) {
+            if ((after <= before) && (after >= 0)) {
                 return obj;
             } else {
                 return memo;
@@ -187,6 +185,7 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
             name: product['mediaFile.mediaFileConfigs.product.name'],
             price: product['mediaFile.mediaFileConfigs.product.price'],
             desc: product['mediaFile.mediaFileConfigs.product.description'],
+            image: product['mediaFile.mediaFileConfigs.product.image'],
             url: product['mediaFile.mediaFileConfigs.product.url']
         };
 
@@ -194,8 +193,6 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
-
-        console.log(err);
 
         //실패
         res.status(411);
