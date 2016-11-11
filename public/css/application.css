@@ -5451,3 +5451,26 @@ button.close {
 html, h1, h2, h3, h4, h5, p, li, a {
   font-family: Dotum, '돋움', helvetica;
   word-break: keep-all; }
+
+.navbar-brand {
+  width: 9em;
+  display: flex;
+  align-items: center; }
+  .navbar-brand > .nav-logo {
+    font-size: 1.5em;
+    font-weight: bold; }
+
+.nav-menu a {
+  font-size: 1.2em; }
+
+.nav-menu :hover {
+  color: #337ab7 !important; }
+
+.navbar-user {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 15px;
+  padding-left: 15px; }
+  .navbar-user > .logout {
+    margin-left: 15px;
+    margin-right: 15px; }

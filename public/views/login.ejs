@@ -2,22 +2,37 @@
     layout('layout')
     stylesheet('/css/login.css')
 %>
-<div class="container">
-    <div class="row">
-        <div class="col-center">
-            <form class="form-login" action="login" method="POST">
-                <div class="input-group">
-                    <span class="input-group-addon">Email</span>
-                    <input class="form-control" type="email" name="email" value="" />
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">Password</span>
-                    <input class="form-control" type="password" name="password" value="" />
-                </div>
-                <div class="input-group">
-                    <input type="submit" />
-                </div>
-            </form>
+<div class="col-sm-2"></div>
+<div class="col-sm-8">
+    <form class="form-horizontal" action="login" method="POST">
+        <div>
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <h2>WooNeBo 관리자 로그인</h2>
+            </div>
         </div>
-    </div>
+        <div>
+            <div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Email</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" placeholder="email@example.com" type="email" name="email" value="" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Password</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="password" placeholder="password" name="password" value="" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <button class="btn btn-default" type="submit">LogIn</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+<div class="col-sm-2"></div>

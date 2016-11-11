@@ -4,13 +4,67 @@
 <meta http-equiv='Content-Type' content='text/html, charset=UTF-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0' >
 <title><%-title%></title>
-<link rel="stylesheet" href="/css/application.css" />
 <%-stylesheets%>
 <script src="/js/jquery.js"></script>
+<script src="/js/bootstrap.min.js"></script>
 <%-scripts%>
+<script>
+$(function() {
+    $(".navbar-brand").mouseenter(function(){
+        $('.nav-logo').fadeOut(200, function() {$('.nav-logo').text('WooNeBo');}).fadeIn(300);
+    }).mouseleave(function(){
+        $('.nav-logo').fadeOut(200, function() {$('.nav-logo').text('WNB');}).fadeIn(300);
+    });
+});
+</script>
 </head>
 <body>
-<div class="nav nav-bar"></div>
-<%-body%>
+<nav class="navbar-top">
+    <div class="container">
+        <div class="row">
+            <div class="nav navbar-nav navbar-right navbar-user">
+            <% if (admin) { %>
+                <span class="email">관리자: <%= admin.email %></span>
+                <a class="logout" href="/admins/logout">로그아웃<a>
+            <% } %>
+            </div>
+        </div>
+    </div>
+</nav>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="row">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/admins">
+                    <span class="nav-logo">WNB</span>
+                </a>
+                <button class="navbar-toggle collapsed" data-toggle="collapse" data-target=".main-top-nav" aria-expanded="false">
+                    <span class="sr-only"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse main-top-nav collapse" aria-expanded="false">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-menu">
+                        <a href="kiosks">키오스크 관리</a>
+                    </li>
+                    <li class="nav-menu">
+                        <a href="products">상품 관리</a>
+                    </li>
+                    <li class="nav-menu">
+                        <a href="medias">광고파일 관리</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+    <%-body%>
+    </div>
+</div>
 </body>
 </html>

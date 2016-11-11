@@ -1,0 +1,22 @@
+<%
+    layout('/layout')
+    script('/js/kiosk.js')
+    stylesheet('/css/kiosk.css')
+%>
+<div class="form-edit">
+    <form class="form form-horizontal" action="/admins/<%= admin.id %>/kiosks" method="POST" if-none-match=”*”>
+        <div class="form-label">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <h3 class="center">키오스크 생성</h3>
+            </div>
+        </div>
+        <%- include form %>
+        <div class="form-gruop">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <button class="btn btn-default" type="submit">생성</button>
+            </div>
+        </div>
+    </form>
+</div>

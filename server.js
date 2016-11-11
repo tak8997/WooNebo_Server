@@ -31,6 +31,9 @@ app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//use put, delete method
+app.use(require('method-override')('method'));
+
 //요청 REST 로그
 app.use(function(req, res, next) {
     console.log(req.method + ' ' + req.originalUrl);

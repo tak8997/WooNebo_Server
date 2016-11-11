@@ -1,0 +1,43 @@
+<%
+    layout('/layout')
+    stylesheet('/css/kiosk.css')
+    script('/js/kiosk.js')
+%>
+<div>
+    <div class="row">
+        <div class="menu-name">
+            <span class="bold-text">키오스크 관리</span>
+            <div class="btn-right">
+                <button class="btn btn-primary btn-sm" id="kiosk-new">등록</button>
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr class="header">
+                <th class="id">ID</th>
+                <th class="desc">Description</th>
+                <th class="location">Location (lat, lng)</th>
+                <th class="ble">BLE</th>
+                <th class="play-file">Play File</th>
+                <th class="play-at">Play at</th>
+                <th class="create-at">Created at</th>
+                <th class="update-at">Updated at</th>
+            </tr>
+        </thead>
+        <tbody class="table-hover">
+        <% kiosks.forEach(function(kiosk) { %>
+            <tr class="list" id=<%= kiosk.id %> >
+                <th class="id"><%= kiosk.id %></th>
+                <td class="desc"><%= kiosk.description %></td>
+                <td class="location"><%= kiosk.lat %>, <%= kiosk.lng %></td>
+                <td class="ble"><%= kiosk.ble %></td>
+                <td class="play-file"><%= kiosk['mediaFile.file_name'] %></td>
+                <td class="play-at"><%= kiosk.last_play_at %></td>
+                <td class="create-at"><%= kiosk.create_at %></td>
+                <td class="update-at"><%= kiosk.update_at %></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+</div>

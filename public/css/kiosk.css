@@ -5475,5 +5475,26 @@ html, h1, h2, h3, h4, h5, p, li, a {
     margin-left: 15px;
     margin-right: 15px; }
 
-.main {
-  display: block; }
+.form {
+  width: 100%;
+  padding: 20px;
+  padding-top: 0; }
+
+.form-edit {
+  display: flex;
+  justify-content: center; }
+
+.menu-name {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px; }
+  .menu-name > .bold-text {
+    width: 50%;
+    font-size: 2em;
+    font-weight: bold; }
+  .menu-name > .btn-right {
+    width: 50%;
+    display: flex;
+    justify-content: flex-end; }
