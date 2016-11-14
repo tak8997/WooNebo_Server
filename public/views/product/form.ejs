@@ -1,0 +1,35 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label">Image</label>
+    <div class="col-sm-10">
+    <% if (product.image) { %>
+        <image class="product-img" id="product-img" src="<%= product.image %>" alt="등록하려면 클릭하세요" />
+    <% } else { %>
+        <image class="product-img" id="product-img" alt="등록하려면 클릭하세요" />
+    <% } %>
+        <input type="text" id="product-img-path" value="<%= product.image %>" name="image" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">Product</label>
+    <div class="col-sm-10">
+        <input class="form-control" type="text" name="name" placeholder="product name" value="<%= product.product_name %>" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">Description</label>
+    <div class="col-sm-10">
+        <textarea class="form-control" name="description" placeholder="product description"><%= product.description %></textarea>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">Price</label>
+    <div class="col-sm-10">
+        <input class="form-control" name="price" placeholder="price" value="<%= product.price %>" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">URL</label>
+    <div class="col-sm-10">
+        <input class="form-control" name="url" placeholder="url address" value="<%= product.url %>" />
+    </div>
+</div>

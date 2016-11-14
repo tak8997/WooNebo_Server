@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+var multipart = require('connect-multiparty');
 
 var passport = require('passport');
 var router = require('./router');
@@ -30,6 +31,9 @@ app.use(passport.session());
 //use body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//files parser for upload
+app.use(multipart());
 
 //use put, delete method
 app.use(require('method-override')('method'));

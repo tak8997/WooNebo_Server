@@ -1,0 +1,37 @@
+'use strict';
+
+var express = require('express');
+var upload = express.Router();
+var shortid = require('shortid');
+var fs = require('fs');
+
+
+module.exports = upload;
+
+upload.post('/', ensureAuthentication, function (req, res) {
+    fs.readFile(req.files.uploadFile.path, function(error, data) {
+        let fileName = shortid.generate();
+        let filePath = "public/uploads/" + req.user.id + '/' + fileName;
+
+        fs.writeFile(filePath, data, function(error) {
+            if (error) {
+                res.status(404);
+                res.redirect('back');
+
+                return;
+            } else {
+                res.send("/images/" + req.user.id + "/" + fileName);
+            }
+        });
+    });
+});
+
+
+function ensureAuthentication(req, res, next) {
+    if (!req.isAuthenticated()) {
+        res.status(401);
+        res.end();
+    } else {
+        next();
+    }
+}

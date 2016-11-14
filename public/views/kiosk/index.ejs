@@ -15,29 +15,38 @@
     <table class="table table-hover">
         <thead>
             <tr class="header">
-                <th class="id">ID</th>
-                <th class="desc">Description</th>
-                <th class="location">Location (lat, lng)</th>
-                <th class="ble">BLE</th>
-                <th class="play-file">Play File</th>
-                <th class="play-at">Play at</th>
-                <th class="create-at">Created at</th>
-                <th class="update-at">Updated at</th>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Location (lat, lng)</th>
+                <th>BLE</th>
+                <th>Play File</th>
+                <th>Play at</th>
+                <th>Created at</th>
+                <th>Updated at</th>
             </tr>
         </thead>
         <tbody class="table-hover">
         <% kiosks.forEach(function(kiosk) { %>
             <tr class="list" id=<%= kiosk.id %> >
-                <th class="id"><%= kiosk.id %></th>
-                <td class="desc"><%= kiosk.description %></td>
-                <td class="location"><%= kiosk.lat %>, <%= kiosk.lng %></td>
-                <td class="ble"><%= kiosk.ble %></td>
-                <td class="play-file"><%= kiosk['mediaFile.file_name'] %></td>
-                <td class="play-at"><%= kiosk.last_play_at %></td>
-                <td class="create-at"><%= kiosk.create_at %></td>
-                <td class="update-at"><%= kiosk.update_at %></td>
+                <th><%= kiosk.id %></th>
+                <td><%= kiosk.description %></td>
+                <td><%= kiosk.lat %>, <%= kiosk.lng %></td>
+                <td><%= kiosk.ble %></td>
+                <td><%= kiosk.last_file %></td>
+                <td><%= kiosk.last_play_at %></td>
+                <td><%= kiosk.create_at %></td>
+                <td><%= kiosk.update_at %></td>
             </tr>
         <% }); %>
         </tbody>
     </table>
+    <nav class="pagination">
+    <% if (locals.prev) { %>
+        <a href="/admins/kiosks?page=<%= (locals.page - 1) %>">Previous</a>
+    <% } %>
+
+    <% if (locals.next) { %>
+        <a href="/admins/kiosks?page=<%= (locals.page + 1) %>">Next</a>
+    <% } %>
+    </nav>
 </div>

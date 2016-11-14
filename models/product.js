@@ -3,6 +3,7 @@ module.exports = function(sequelize, DataTypes) {
         register: DataTypes.INTEGER,
         product_name: DataTypes.STRING,
         price: DataTypes.INTEGER,
+        image: DataTypes.STRING,
         description: DataTypes.STRING,
         url: DataTypes.STRING
     }, {

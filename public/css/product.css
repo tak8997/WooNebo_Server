@@ -5505,5 +5505,7 @@ html, h1, h2, h3, h4, h5, p, li, a {
   .pagination a {
     padding: 10px; }
 
-.main {
-  display: block; }
+.product-img {
+  width: 10%;
+  min-width: 10%;
+  max-width: 10%; }

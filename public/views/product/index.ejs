@@ -1,0 +1,50 @@
+<%
+    layout('/layout')
+    stylesheet('/css/product.css')
+    script('/js/product.js')
+%>
+<div>
+    <div class="row">
+        <div class="menu-name">
+            <span class="bold-text">상품 관리</span>
+            <div class="btn-right">
+                <button class="btn btn-primary btn-sm" id="product-new">등록</button>
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr class="header">
+                <th class="product-img">Image</th>
+                <th>Product</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>URL</th>
+                <th>Created at</th>
+                <th>Updated at</th>
+            </tr>
+        </thead>
+        <tbody class="table-hover">
+        <% products.forEach(function(product) { %>
+            <tr class="list" id=<%= product.id %> >
+                <td class="product-img"><img src="<%= product.image %>" class="img-responsive" alt="<%= product.product_name %>"></td>
+                <td><%= product.product_name %></td>
+                <td><%= product.description %></td>
+                <td><%= product.price %>원</td>
+                <td><%= product.url %></td>
+                <td><%= product.create_at %></td>
+                <td><%= product.update_at %></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+    <nav class="pagination">
+    <% if (locals.prev) { %>
+        <a href="/admins/products?page=<%= (locals.page - 1) %>">Previous</a>
+    <% } %>
+
+    <% if (locals.next) { %>
+        <a href="/admins/products?page=<%= (locals.page + 1) %>">Next</a>
+    <% } %>
+    </nav>
+</div>

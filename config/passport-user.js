@@ -18,7 +18,7 @@ passport.use('user-local', new LocalStrategy({
             where: {
                 email: email
             },
-            attributes: ['id', 'email', ['pwd', 'password'], 'name'],
+            attributes: ['id', 'email', ['pwd', 'password']],
             raw: true
         }).then(function(user) {
             if (!user) return callback(null, false);
@@ -65,7 +65,7 @@ passport.use(new TokenFacebookStrategy({
             });
 
             return callback(null, user);
-            
+
         }).catch(function(err) {
             callback(err);
         });

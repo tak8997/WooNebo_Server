@@ -5498,3 +5498,9 @@ html, h1, h2, h3, h4, h5, p, li, a {
     width: 50%;
     display: flex;
     justify-content: flex-end; }
+
+.pagination {
+  display: flex;
+  justify-content: center; }
+  .pagination a {
+    padding: 10px; }
