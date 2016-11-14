@@ -9,8 +9,8 @@ var moment = require('moment');
 var models = require('../models');
 var passport = require('../config/passport-user');
 var redirects = {
-    successRedirect: '/users/success',
-    failureRedirect: '/users/failure'
+    successRedirect: '/users/auth/success',
+    failureRedirect: '/users/auth/failure'
 }
 
 
