@@ -1,0 +1,44 @@
+<%
+    layout('/layout')
+    stylesheet('/css/media.css')
+    script('/js/media.js')
+%>
+<div>
+    <div class="row">
+        <div class="menu-name">
+            <span class="bold-text">파일 관리</span>
+            <div class="btn-right">
+                <button class="btn btn-primary btn-sm" id="media-new">등록</button>
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr class="header">
+                <th>ID</th>
+                <th>File Name</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody class="table-hover">
+        <% files.forEach(function(file) { %>
+            <tr class="list" id=<%= file.id %> >
+                <td><%= file.id %></td>
+                <td><%= file.name %></td>
+                <td><%= file.description %></td>
+                <td class="delete-media"><input type="button" class="btn btn-warning btn-xs delete-button" value="X"/></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+    <nav class="pagination">
+    <% if (locals.prev) { %>
+        <a href="/admins/medias?page=<%= (locals.page - 1) %>">Previous</a>
+    <% } %>
+
+    <% if (locals.next) { %>
+        <a href="/admins/medias?page=<%= (locals.page + 1) %>">Next</a>
+    <% } %>
+    </nav>
+</div>

@@ -1,25 +1,29 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">ID</label>
-    <div class="col-sm-10">
+    <div class="col-sm-8">
         <input class="form-control" value=<%= kiosk.id %> disabled/>
     </div>
+    <div class="col-sm-2"></div>
 </div>
 <div class="form-group">
     <label class="col-sm-2 control-label">Description</label>
-    <div class="col-sm-10">
+    <div class="col-sm-8">
         <textarea class="form-control" type="text" name="description" placeholder="kiosk description"><%= kiosk.description %></textarea>
     </div>
+    <div class="col-sm-2"></div>
 </div>
 <div class="form-group">
     <label class="col-sm-2 control-label">Location</label>
-    <div class="col-sm-10">
+    <div class="col-sm-8">
         <input class="form-control" type="number" step="0.000001" name="lat" placeholder="lattitude" value="<%= kiosk.lat %>" />
         <input class="form-control" type="number" step="0.000001" name="lng" placeholder="longitude" value="<%= kiosk.lng %>" />
     </div>
+    <div class="col-sm-2"></div>
 </div>
 <div class="form-group">
     <label class="col-sm-2 control-label">BLE</label>
-    <div class="col-sm-10">
+    <div class="col-sm-8">
         <input class="form-control" name="ble" placeholder="BLE" value="<%= kiosk.ble %>" />
     </div>
+    <div class="col-sm-2"></div>
 </div>

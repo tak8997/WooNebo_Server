@@ -1,0 +1,27 @@
+<%
+    layout('/layout')
+    stylesheet('/css/media.css')
+    script('/js/media.js')
+%>
+<div class="form-edit">
+    <div class="form-container">
+        <form class="form form-horizontal" action="?method=PUT" method="POST" if-none-match=”*”>
+            <div class="form-label form-group">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                    <h3 class="center">파일 정보 변경</h3>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+            <%- include form %>
+            <%- include config %>
+            <div class="form-group">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                    <button class="btn btn-info" type="submit">변경</button>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+        </form>
+    </div>
+</div>

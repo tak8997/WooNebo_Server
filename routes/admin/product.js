@@ -54,7 +54,7 @@ product.post('/', function(req, res) {
         //성공
         res.send('<script>alert("등록 성공"); window.location.assign("/admins/products");</script>');
     }).catch(function(err) {
-        console.log(err);
+
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
     });
@@ -80,8 +80,6 @@ product.get('/:productId', function(req, res) {
         },
         raw: true
     }).then(function(product) {
-
-        console.log(product);
 
         //성공
         res.render('product/edit', { title: '상품 정보 변경', product: product, admin: req.user  });

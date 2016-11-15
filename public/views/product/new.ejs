@@ -1,22 +1,24 @@
 <%
     layout('/layout')
-    script('/js/product.js')
     stylesheet('/css/product.css')
+    script('/js/product.js')
 %>
 <div class="form-edit">
     <form class="form form-horizontal" action="/admins/products" method="POST" if-none-match=”*”>
         <div class="form-label form-group">
             <div class="col-sm-2"></div>
-            <div class="col-sm-10">
+            <div class="col-sm-8">
                 <h3 class="center">상품 등록</h3>
             </div>
+            <div class="col-sm-2"></div>
         </div>
         <%- include form %>
         <div class="form-group">
             <div class="col-sm-2"></div>
-            <div class="col-sm-10">
-                <button class="btn btn-default" type="submit">등록</button>
+            <div class="col-sm-8">
+                <button class="btn btn-info" type="submit">등록</button>
             </div>
+            <div class="col-sm-2"></div>
         </div>
     </form>
 </div>

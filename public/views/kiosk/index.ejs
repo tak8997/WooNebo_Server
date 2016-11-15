@@ -19,10 +19,10 @@
                 <th>Description</th>
                 <th>Location (lat, lng)</th>
                 <th>BLE</th>
-                <th>Play File</th>
-                <th>Play at</th>
-                <th>Created at</th>
-                <th>Updated at</th>
+                <th class="hidden-sm hidden-xs">Play File</th>
+                <th class="hidden-sm hidden-xs">Play at</th>
+                <th class="hidden-xs">Created at</th>
+                <th class="hidden-xs">Updated at</th>
             </tr>
         </thead>
         <tbody class="table-hover">
@@ -32,10 +32,10 @@
                 <td><%= kiosk.description %></td>
                 <td><%= kiosk.lat %>, <%= kiosk.lng %></td>
                 <td><%= kiosk.ble %></td>
-                <td><%= kiosk.last_file %></td>
-                <td><%= kiosk.last_play_at %></td>
-                <td><%= kiosk.create_at %></td>
-                <td><%= kiosk.update_at %></td>
+                <td class="hidden-sm hidden-xs"><%= kiosk.last_file %></td>
+                <td class="hidden-sm hidden-xs"><%= kiosk.last_play_at %></td>
+                <td class="hidden-xs"><%= kiosk.create_at %></td>
+                <td class="hidden-xs"><%= kiosk.update_at %></td>
             </tr>
         <% }); %>
         </tbody>

@@ -202,8 +202,7 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
 
 //키오스크가 현재 재생 정보를 보내는 REST
 kiosk.post('/:id/play', function(req, res) {
-    let sequelize = require('sequelize');
-
+    
     //Transaction 시작
     models.sequelize.transaction(function(t) {
         if (!req.body.playAt || !req.body.fileName) {

@@ -11,7 +11,7 @@ module.exports = upload;
 upload.post('/', ensureAuthentication, function (req, res) {
     fs.readFile(req.files.uploadFile.path, function(error, data) {
         let fileName = shortid.generate();
-        let filePath = "public/uploads/" + req.user.id + '/' + fileName;
+        let filePath = "public/uploads/" + fileName;
 
         fs.writeFile(filePath, data, function(error) {
             if (error) {
@@ -20,7 +20,7 @@ upload.post('/', ensureAuthentication, function (req, res) {
 
                 return;
             } else {
-                res.send("/images/" + req.user.id + "/" + fileName);
+                res.send("/images/" + fileName);
             }
         });
     });

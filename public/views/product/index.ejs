@@ -14,14 +14,14 @@
     </div>
     <table class="table table-hover">
         <thead>
-            <tr class="header">
+            <tr class="header product-header">
                 <th class="product-img">Image</th>
                 <th>Product</th>
-                <th>Description</th>
+                <th class="desc hidden-sm hidden-xs">Description</th>
                 <th>Price</th>
                 <th>URL</th>
-                <th>Created at</th>
-                <th>Updated at</th>
+                <th class="date hidden-xs">Created at</th>
+                <th class="date hidden-xs">Updated at</th>
             </tr>
         </thead>
         <tbody class="table-hover">
@@ -29,11 +29,11 @@
             <tr class="list" id=<%= product.id %> >
                 <td class="product-img"><img src="<%= product.image %>" class="img-responsive" alt="<%= product.product_name %>"></td>
                 <td><%= product.product_name %></td>
-                <td><%= product.description %></td>
+                <td class="hidden-sm hidden-xs"><%= product.description %></td>
                 <td><%= product.price %>원</td>
                 <td><%= product.url %></td>
-                <td><%= product.create_at %></td>
-                <td><%= product.update_at %></td>
+                <td class="hidden-xs"><%= product.create_at %></td>
+                <td class="hidden-xs"><%= product.update_at %></td>
             </tr>
         <% }); %>
         </tbody>

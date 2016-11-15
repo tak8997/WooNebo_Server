@@ -15,7 +15,7 @@ $(function(){
         var formData = new FormData($(this)[0]);
 
         $.ajax({
-            url: '/uploads',
+            url: window.location.origin + '/uploads',
             type: 'POST',
             data: formData,
             async: false,

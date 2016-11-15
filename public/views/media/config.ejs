@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">
+        <h4>파일-상품 설정</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr class="header">
+                    <th>Product</th>
+                    <th>Play At (s)</th>
+                    <th><input type="button" class="btn btn-success btn-xs add" value="+"/></th>
+                </tr>
+            </thead>
+            <tbody class="table-hover">
+            <% configs.forEach(function(config) { %>
+                <tr class="configs">
+                    <td>
+                        <select class="product" name="product">
+                        <% products.forEach(function(product) { %>
+                            <option value="<%= product.id %>" <% if (config.product_id === product.id) { %> selected <% } %>>
+                                <%= product.product_name %>
+                            </option>
+                        <% }) %>
+                        </select>
+                    </td>
+                    <td><input type="number" name="playAt" class="play-at" value="<%= config.play_time_at %>"/></td>
+                    <td><input type="button" class="btn btn-warning btn-xs delete" value="X" /></td>
+                </tr>
+            <% }); %>
+            <% if (configs.length === 0) { %>
+                <tr class="configs">
+                    <td>
+                        <select class="product" name="product">
+                        <% products.forEach(function(product) { %>
+                            <option value="<%= product.id %>">
+                                <%= product.product_name %>
+                            </option>
+                        <% }) %>
+                        </select>
+                    </td>
+                    <td><input type="number" name="playAt" class="play-at" value="0"/></td>
+                    <td><input type="button" class="btn btn-warning btn-xs delete" value="X" /></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-2"></div>
+</div>
