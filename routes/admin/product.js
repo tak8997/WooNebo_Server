@@ -66,17 +66,18 @@ product.get('/new', function(req, res) {
 });
 
 //상품 상세 정보 페이지
-product.get('/:productId', function(req, res) {
-    let productId = Number.parseInt(req.params.productId);
+product.get('/:id', function(req, res) {
+    let id = Number.parseInt(req.params.id);
 
-    if (!productId) {
+    if (!id) {
         res.redirect('/admins');
     }
 
     //상품 아이디를 기반으로 검색
     models.product.findOne({
         where: {
-            id: productId
+            id: id,
+            register: req.user.id
         },
         raw: true
     }).then(function(product) {
@@ -91,7 +92,7 @@ product.get('/:productId', function(req, res) {
 });
 
 //상품 상세 정보 변경 페이지
-product.put('/:productId', function(req, res) {
+product.put('/:id', function(req, res) {
     let product = {
         description: req.body.description,
         price: req.body.price,
@@ -99,17 +100,63 @@ product.put('/:productId', function(req, res) {
         url: req.body.url,
         image: req.body.image
     };
-    let productId = req.params.productId;
+    let productId = req.params.id;
 
     //상품 아이디로 검색하여 상세정보 변경
     models.product.update(product, {
         where: {
-            id: productId
+            id: productId,
+            register: req.user.id
         }
-    }).then(function() {
+    }).then(function(result) {
+
+        //비정상 접근
+        if (result[0] === 0) {
+            res.send('<script>alert("잘못된 접근입니다."); window.location.assign("/admins/products");</script>');
+            return;
+        }
 
         //성공
         res.send('<script>alert("변경 성공"); window.location.assign("/admins/products");</script>');
+    }).catch(function(err) {
+
+        //실패
+        res.status(500).send('<script>alert("error"); history.back();</script>');
+    });
+});
+
+//상품 삭제 REST
+product.delete('/:id', function(req, res) {
+    let id = req.params.id;
+
+    models.product.count({
+        where: {
+            id: id,
+            register: req.user.id
+        }
+    }).then(function(result) {
+
+        //비정상 접근
+        if (result === 0) {
+            res.send('<script>alert("잘못된 접근입니다."); window.location.assign("/admins/products");</script>');
+            return;
+        }
+
+        models.mediaFileConfig.destroy({
+            where: {
+                product_id: id
+            }
+        }).then(function() {
+            models.product.destroy({
+                where: {
+                    id: id
+                }
+            }),then(function(){
+
+                //성공
+                res.send('<script>alert("삭제 성공"); window.location.assign("/admins/products");</script>');
+            });
+        });
     }).catch(function(err) {
 
         //실패

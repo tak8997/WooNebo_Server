@@ -227,36 +227,34 @@ media.delete('/:id', function(req, res) {
         }
     }).then(function(result) {
 
-        //소유주인 경우 삭제 허용
-        if (result === 1) {
+        //자신이 등록한 상품이 아닌 것을 지우려는 접근
+        if (result === 0) {
+            res.status(401).send('<script>alert("잘못된 접근입니다."); history.back();</script>');
+            return;
+        }
 
-            //해당 파일의 파일-상품 정보 삭제
-            models.mediaFileConfig.destroy({
+        //해당 파일의 파일-상품 정보 삭제
+        models.mediaFileConfig.destroy({
+            where: {
+                file_id: id
+            }
+        }).then(function() {
+            models.kiosk.update({
+                last_play_file_id: null
+            }, {
                 where: {
-                    file_id: id
+                    last_play_file_id: id
                 }
             }).then(function() {
-                models.kiosk.update({
-                    last_play_file_id: null
-                }, {
+                models.mediaFile.destroy({
                     where: {
-                        last_play_file_id: id
+                        id: id
                     }
                 }).then(function() {
-                    models.mediaFile.destroy({
-                        where: {
-                            id: id
-                        }
-                    }).then(function() {
-                        res.send('<script>alert("삭제 성공"); window.location.assign("/admins/medias");</script>')
-                    });
+                    res.send('<script>alert("삭제 성공"); window.location.assign("/admins/medias");</script>')
                 });
             });
-        } else {
-
-            //자신이 등록한 상품이 아닌 것을 지우려는 접근
-            res.status(401).send('<script>alert("잘못된 접근입니다."); history.back();</script>');
-        }
+        });
     }).catch(function(err) {
 
         //실패

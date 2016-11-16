@@ -15,13 +15,14 @@
     <table class="table table-hover">
         <thead>
             <tr class="header product-header">
-                <th class="product-img">Image</th>
+                <th>Image</th>
                 <th>Product</th>
                 <th class="desc hidden-sm hidden-xs">Description</th>
                 <th>Price</th>
                 <th>URL</th>
                 <th class="date hidden-xs">Created at</th>
                 <th class="date hidden-xs">Updated at</th>
+                <th></th>
             </tr>
         </thead>
         <tbody class="table-hover">
@@ -34,6 +35,7 @@
                 <td><%= product.url %></td>
                 <td class="hidden-xs"><%= product.create_at %></td>
                 <td class="hidden-xs"><%= product.update_at %></td>
+                <td><input type="button" class="btn btn-warning btn-xs delete-button" value="X"/></td>
             </tr>
         <% }); %>
         </tbody>

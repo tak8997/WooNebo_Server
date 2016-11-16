@@ -49,4 +49,18 @@ $(function(){
     $('#product-img').on('click', function() {
         img.click();
     });
+    $('.delete-button').click(function(e) {
+        e.stopPropagation();
+
+        var id = $(this).parent().parent().attr('id');
+
+        var form = $('<form>').attr({
+            action: '/admins/products/' + id + '?method=DELETE',
+            method: 'POST'
+        });
+
+        if (confirm("정말로 삭제 하시겠습니까? \n해당 상품을 삭제하실경우 연관된 데이터가 전부 삭제됩니다.") === true) {
+            form.submit();
+        }
+    });
 });

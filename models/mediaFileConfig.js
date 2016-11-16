@@ -4,9 +4,6 @@ module.exports = function(sequelize, DataTypes) {
         product_id: DataTypes.INTEGER,
         play_time_at: DataTypes.INTEGER
     }, {
-        timestamps: true,
-        createdAt: 'create_at',
-        updatedAt: 'update_at',
-        tableName: 'media_file_configs'
+        timestamps: false
     });
 };

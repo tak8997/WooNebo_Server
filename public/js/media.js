@@ -31,6 +31,8 @@ $(function(){
             method: 'post'
         });
 
-        form.submit();
+        if (confirm("정말로 삭제 하시겠습니까? \n해당 파일정보를 삭제하실경우 연관된 데이터가 전부 삭제됩니다.") === true) {
+            form.submit();
+        }
     });
 });

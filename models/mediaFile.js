@@ -4,7 +4,9 @@ module.exports = function(sequelize, DataTypes) {
         description: DataTypes.STRING,
         register: DataTypes.INTEGER
     }, {
-        timestamps: false,
+        timestamps: true,
+        createdAt: 'create_at',
+        updatedAt: 'update_at',
         tableName: 'media_files'
     });
 };

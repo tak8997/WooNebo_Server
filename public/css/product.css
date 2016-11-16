@@ -1,7 +1,5 @@
 .product-img {
-  width: 10%;
-  min-width: 10%;
-  max-width: 10%; }
+  width: 15rem; }
 
 .product-header > .date {
   width: 10%; }

@@ -6,6 +6,7 @@ var moment = require('moment');
 require('underscore');
 
 var models = require('../models');
+var util = require('../util');
 var gps_maxDiatance = 100;
 
 
@@ -13,14 +14,12 @@ module.exports = kiosk;
 
 //현재 위치나 BLE를 기반으로 하여 키오스크의 정보를 요청받는 REST
 kiosk.get('/', ensureAuthentication, function(req, res) {
-    let options = { where: {} };
+    let options = {};
 
     //ble파라미터 존재 시
     if (req.query.ble) {
         options = {
-            where: {
-                ble: req.query.ble
-            }
+            ble: req.query.ble
         }
     } else if (req.query.lat && req.query.lng) {
 
@@ -28,21 +27,23 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
         let lat = req.query.lat;
         let lng = req.query.lng;
 
+
         //최대 거리 파라미터 존재 시 (없을 경우 default value 사용)
         if (req.query.maxDistance) {
             gps_maxDiatance = req.query.maxDistance;
         }
 
-        options = {
-            where: {
-                lat: {
+        let points = util.findPoints({ lat: lat, lng: lng }, gps_maxDiatance);
 
-                },
-                lng: {
-
-                }
+        options =  {
+            lat: {
+                $between: [points.lat.min, points.lat.max]
+            },
+            lng: {
+                $between: [points.lng.min, points.lng.max]
             }
         }
+
     } else {
 
         // //ble 또는 gps 파라미터가 없을 시
@@ -52,7 +53,7 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
     models.kiosk.findAll({
-        options,
+        where: options,
         include: [{
 
             //join media_files table
@@ -71,7 +72,7 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
             }],
             attributes: []
         }],
-        attributes: ['id', 'description', 'last_play_at'],
+        attributes: ['id', 'lat', 'lng', 'description', 'last_play_at'],
         raw: true
     }).then(function(kiosks) {
         let result = { kiosks: [], counts: 0 };
@@ -202,7 +203,7 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
 
 //키오스크가 현재 재생 정보를 보내는 REST
 kiosk.post('/:id/play', function(req, res) {
-    
+
     //Transaction 시작
     models.sequelize.transaction(function(t) {
         if (!req.body.playAt || !req.body.fileName) {
