@@ -4,6 +4,7 @@ module.exports = function(sequelize, DataTypes) {
         product_id: DataTypes.INTEGER,
         play_time_at: DataTypes.INTEGER
     }, {
-        timestamps: false
+        timestamps: false,
+        tableName: 'media_file_configs'
     });
 };

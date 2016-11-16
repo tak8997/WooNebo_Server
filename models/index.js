@@ -14,8 +14,7 @@ var models = [
     'mediaFileConfig',
     'product',
     'searchLog',
-    'playInfo',
-    'token'
+    'playInfo'
 ];
 models.forEach(function(model) {
     module.exports[model] = sequelize.import('./' + model);
@@ -31,7 +30,6 @@ models.forEach(function(model) {
     m.mediaFile.hasMany(m.mediaFileConfig, { foreignKey: 'file_id' });
     m.mediaFile.hasMany(m.playInfo, { foreignKey: 'file_id' });
     m.user.hasMany(m.searchLog, { foreignKey: 'user_id' });
-    m.user.hasMany(m.token, { foreignKey: 'user_id' });
     m.product.hasMany(m.searchLog, { foreignKey: 'product_id' });
     m.product.hasMany(m.mediaFileConfig, { foreignKey: 'product_id' });
 
@@ -44,7 +42,6 @@ models.forEach(function(model) {
     m.playInfo.belongsTo(m.kiosk, { foreignKey: 'kiosk_id' });
     m.searchLog.belongsTo(m.user, { foreignKey: 'user_id' });
     m.searchLog.belongsTo(m.product, { foreignKey: 'product_id' });
-    m.token.belongsTo(m.user, { foreignKey: 'user_id' });
 })(module.exports);
 
 sequelize
