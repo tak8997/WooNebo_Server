@@ -16,14 +16,14 @@ util.findPoints = function(location, max) {
 
     diffLng = max * 360/(2*pi*radius*Math.cos(util.transform(location.lat, 'radian')));
 
-    result.lng.min = (Number(location.lat) - diffLng);
-    result.lng.max = (Number(location.lat) + diffLng);
+    result.lng.min = (Number(location.lng) - diffLng);
+    result.lng.max = (Number(location.lng) + diffLng);
 
     diffLat = max * 360 / (2 * pi * radius);
 
     result.lat = {
-        min: (Number(location.lng) - diffLat),
-        max: (Number(location.lng) + diffLat)
+        min: (Number(location.lat) - diffLat),
+        max: (Number(location.lat) + diffLat)
     }
 
     return result;

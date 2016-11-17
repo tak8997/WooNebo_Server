@@ -35,6 +35,8 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
 
         let points = util.findPoints({ lat: lat, lng: lng }, gps_maxDiatance);
 
+        console.log(points)
+
         options =  {
             lat: {
                 $between: [points.lat.min, points.lat.max]
