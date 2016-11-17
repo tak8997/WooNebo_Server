@@ -17,7 +17,7 @@
             <tr class="header">
                 <th>ID</th>
                 <th>Description</th>
-                <th>Location (lat, lng)</th>
+                <th>Location (lng, lat)</th>
                 <th>BLE</th>
                 <th class="hidden-sm hidden-xs">Play File</th>
                 <th class="hidden-sm hidden-xs">Play at</th>
@@ -30,7 +30,7 @@
             <tr class="list" id=<%= kiosk.id %> >
                 <th><%= kiosk.id %></th>
                 <td><%= kiosk.description %></td>
-                <td><%= kiosk.lat %>, <%= kiosk.lng %></td>
+                <td><%= kiosk.lng %>, <%= kiosk.lat %></td>
                 <td><%= kiosk.ble %></td>
                 <td class="hidden-sm hidden-xs"><%= kiosk.last_file %></td>
                 <td class="hidden-sm hidden-xs"><%= kiosk.last_play_at %></td>
