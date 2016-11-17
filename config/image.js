@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var image = express.Router();
 var fs = require('fs');
@@ -6,8 +8,15 @@ var fs = require('fs');
 module.exports = image;
 
 image.get('/:name', function(req, res) {
-    var img = fs.readFileSync('public/uploads/' + req.params.name);
+    let img = fs.readFile('public/uploads/' + req.params.name, function(err, data) {
+        if (err) {
+            res.writeHead(411);
+            res.end();
 
-    res.writeHead(200, {'Content-Type': 'image/gif' });
-    res.end(img, 'binary');
+            return;
+        }
+
+        res.writeHead(200, {'Content-Type': 'image/gif' });
+        res.end(img, 'binary');
+    });
 });
