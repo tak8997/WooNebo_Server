@@ -1,6 +1,114 @@
 <%
     layout('layout')
     stylesheet('/css/index.css')
+    script('/js/Chart.js')
 %>
-<div class="main">
+<div class="container">
+    <div class="row">
+        <canvas class="chart"></canvas>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                기간 선택
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a id="day">지난 1일</a></li>
+                <li><a id="month">지난 1달</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
+<script>
+var ctx = $('.chart');
+var color = {
+    background: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)'
+    ],
+    border: [
+        'rgba(255,99,132,1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)'
+    ]
+}
+var daily = {
+    labels: [],
+    datasets: [{
+        label: '1일',
+        backgroundColor: color.background,
+        borderColor: color.border,
+        borderWidth: 1,
+        data: []
+    }]
+}
+var monthly = {
+    labels: [],
+    datasets: [{
+        label: '1달',
+        backgroundColor: color.background,
+        borderColor: color.border,
+        borderWidth: 1,
+        data: []
+    }]
+}
+var option = {
+    title: {
+        display: true,
+        fontSize: 30,
+        text: "상품 검색 기록"
+    },
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true,
+                stepSize: 1
+            }
+        }]
+    },
+    legend: {
+        position: 'right',
+        labels: {
+            boxWidth: 0,
+            fontSize: 20
+        }
+    }
+}
+
+<% data.daily.forEach(function(obj) { %>
+    daily.labels.push("<%= obj.name %>");
+    daily.datasets[0].data.push(<%= obj.counts %>); <% }) %>
+<% data.monthly.forEach(function(obj) { %>
+    monthly.labels.push("<%= obj.name %>");
+    monthly.datasets[0].data.push(<%= obj.counts %>); <% }) %>
+
+var chart = new Chart(ctx ,{
+    type: 'bar',
+    data: daily,
+    options: option
+});
+
+function day() {
+    chart.destroy();
+    chart = new Chart(ctx ,{
+        type: 'bar',
+        data: daily,
+        options: option
+    });
+}
+function month() {
+    chart.destroy();
+    chart = new Chart(ctx ,{
+        type: 'bar',
+        data: monthly,
+        options: option
+    });
+}
+
+$('#day').click(day);
+$('#month').click(month);
+</script>

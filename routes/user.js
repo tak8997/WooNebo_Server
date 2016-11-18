@@ -3,7 +3,7 @@
 var express = require('express');
 var user = express.Router();
 var sha256 = require('sha256');
-var admin = require('firebase-admin');
+var firebase = require('firebase-admin');
 var moment = require('moment');
 
 var models = require('../models');
@@ -11,8 +11,8 @@ var models = require('../models');
 
 module.exports = user;
 
-admin.initializeApp({
-    credential: admin.credential.cert("./config/serviceAccountKey.json"),
+firebase.initializeApp({
+    credential: firebase.credential.cert("./config/serviceAccountKey.json"),
     databaseURL: "https://woonebo-android.firebaseio.com"
 });
 
@@ -20,7 +20,7 @@ admin.initializeApp({
 user.post('/auth', function(req, res) {
     let idToken = req.body.idToken;
 
-    admin.auth().verifyIdToken(idToken).then(function(decodedToken) {
+    firebase.auth().verifyIdToken(idToken).then(function(decodedToken) {
         let user = {
             email: decodedToken.user_id,
             name: decodedToken.name
@@ -41,9 +41,9 @@ user.post('/auth', function(req, res) {
                 res.status(200);
                 res.end();
             });
-        }).catch(function(err) {
-            res.status(401);
-            res.end();
         });
+    }).catch(function(err) {
+        res.status(401);
+        res.end();
     });
 });

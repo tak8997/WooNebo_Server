@@ -21,7 +21,66 @@ module.exports = admin;
 //admin index page
 admin.get('/', function(req, res) {
     if (req.isAuthenticated()) {
-        res.render('index', { title: 'admin page', admin: req.user });
+        models.searchLog.findAll({
+            where: {
+                search_at: {
+                    $gte: moment().subtract(1, 'days').format('YYYY-MM-DD')
+                }
+            },
+            include: [
+                {
+                    model: models.product,
+                    where: {
+                        register: req.user.id
+                    },
+                    attributes: [['product_name', 'name']]
+                }
+            ],
+            attributes: [
+                [ models.sequelize.fn('count', '*'), 'counts' ]
+            ],
+            group: 'product_id',
+            order: 'counts DESC',
+            limit: 10,
+            raw: true
+        }).then(function(result) {
+            let daily = result.map(function(product) {
+                return { name: product['product.name'], counts: product.counts };
+            });
+
+            models.searchLog.findAll({
+                where: {
+                    search_at: {
+                        $gte: moment().subtract(1, 'months').format('YYYY-MM-DD')
+                    }
+                },
+                include: [
+                    {
+                        model: models.product,
+                        where: {
+                            register: req.user.id
+                        },
+                        attributes: [['product_name', 'name']]
+                    }
+                ],
+                attributes: [
+                    [ models.sequelize.fn('count', '*'), 'counts' ]
+                ],
+                group: 'product_id',
+                order: 'counts DESC',
+                limit: 10,
+                raw: true
+            }).then(function(result) {
+                let monthly = result.map(function(product) {
+                    return { name: product['product.name'], counts: product.counts };
+                });
+
+                res.render('index', { title: 'admin page', data: { daily: daily, monthly: monthly }, admin: req.user });
+            });
+        }).catch(function(err) {
+            res.status(500);
+            res.end();
+        });
     } else {
         res.redirect('admins/login');
     }

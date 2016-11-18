@@ -35,8 +35,6 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
 
         let points = util.findPoints({ lat: lat, lng: lng }, gps_maxDiatance);
 
-        console.log(points)
-
         options =  {
             lat: {
                 $between: [points.lat.min, points.lat.max]
@@ -48,9 +46,9 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
 
     } else {
 
-        // //ble 또는 gps 파라미터가 없을 시
-        // res.status(411);
-        // res.end();
+        //ble 또는 gps 파라미터가 없을 시
+        res.status(411);
+        res.end();
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
@@ -192,6 +190,9 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
             url: product['mediaFile.mediaFileConfigs.product.url']
         };
 
+        //검색 로그
+        models.searchLog.create({ user_id: res.locals.user, product_id: result.id, search_at: moment().format('YYYY-MM-DD HH:mm:ss') });
+
         //성공
         res.status(200).json(result);
         res.end();
@@ -271,12 +272,28 @@ kiosk.post('/:id/play', function(req, res) {
 
 //인증여부 세션 검사
 function ensureAuthentication(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    } else {
-        return next();
+    models.user.findOne({
+        where: {
+            token: req.query.token
+        },
+        attributes: ['id'],
+        raw: true
+    }).then(function(result) {
+        if (!result) {
 
-        // res.status(401);
-        // res.end();
-    }
+            //사용자 존재하지 않음
+            res.status(401);
+            res.end();
+        } else {
+
+            //인증된 사용자
+            res.locals.user = result.id;
+            next();
+        }
+    }).catch(function(err) {
+
+        //에러
+        res.status(500);
+        res.end();
+    });
 }
