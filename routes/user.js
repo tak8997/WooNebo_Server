@@ -38,12 +38,12 @@ user.post('/auth', function(req, res) {
                     id: result[0].id
                 }
             }).then(function(result) {
-                res.status(200);
+                res.status(200).json({ msg: "success" });
                 res.end();
             });
         });
     }).catch(function(err) {
-        res.status(401);
+        res.status(401).json({ msg: "UnAuthorized" });
         res.end();
     });
 });

@@ -13,7 +13,7 @@ var gps_maxDiatance = 100;
 module.exports = kiosk;
 
 //현재 위치나 BLE를 기반으로 하여 키오스크의 정보를 요청받는 REST
-kiosk.get('/', ensureAuthentication, function(req, res) {
+kiosk.get('/', function(req, res) {
     let options = {};
 
     //ble파라미터 존재 시
@@ -47,7 +47,7 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
     } else {
 
         //ble 또는 gps 파라미터가 없을 시
-        res.status(411);
+        res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
     }
 
@@ -129,7 +129,7 @@ kiosk.get('/', ensureAuthentication, function(req, res) {
     }).catch(function(err) {
 
         //에러
-        res.status(411);
+        res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
     });
 });
@@ -199,7 +199,7 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
     }).catch(function(err) {
 
         //실패
-        res.status(411);
+        res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
     });
 });
@@ -250,7 +250,7 @@ kiosk.post('/:id/play', function(req, res) {
 
                     //실행 성공시 커밋
                     t.commit();
-                    res.status(200);
+                    res.status(200).json({ msg: "success" });
                     res.end();
                 });
             });
@@ -264,7 +264,7 @@ kiosk.post('/:id/play', function(req, res) {
     }).catch(function(err) {
 
         //에러 처리
-        res.status(411);
+        res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
     });
 });
@@ -274,7 +274,7 @@ kiosk.post('/:id/play', function(req, res) {
 function ensureAuthentication(req, res, next) {
     models.user.findOne({
         where: {
-            token: req.query.token
+            token: req.query.idToken
         },
         attributes: ['id'],
         raw: true
@@ -282,7 +282,7 @@ function ensureAuthentication(req, res, next) {
         if (!result) {
 
             //사용자 존재하지 않음
-            res.status(401);
+            res.status(401).json({ msg: "UnAuthorized" });
             res.end();
         } else {
 
@@ -293,7 +293,7 @@ function ensureAuthentication(req, res, next) {
     }).catch(function(err) {
 
         //에러
-        res.status(500);
+        res.status(500).json({ msg: "error" });
         res.end();
     });
 }
