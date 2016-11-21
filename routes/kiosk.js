@@ -209,11 +209,11 @@ kiosk.post('/:id/play', function(req, res) {
 
     //Transaction 시작
     models.sequelize.transaction(function(t) {
-        if (!req.body.playAt || !req.body.fileName) {
+        if (!req.body.fileName) {
             throw null;
         }
 
-        let playAt = moment(req.body.playAt).format("YYYY-MM-DD HH:mm:ss");
+        let playAt = moment().format("YYYY-MM-DD HH:mm:ss");
         let kioskId = req.params.id;
         let fileName = req.body.fileName;
         let now = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -279,6 +279,7 @@ function ensureAuthentication(req, res, next) {
         attributes: ['id'],
         raw: true
     }).then(function(result) {
+        next();
         if (!result) {
 
             //사용자 존재하지 않음
