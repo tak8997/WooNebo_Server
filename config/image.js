@@ -17,6 +17,6 @@ image.get('/:name', function(req, res) {
         }
 
         res.writeHead(200, {'Content-Type': 'image/gif' });
-        res.end(img, 'binary');
+        res.end(data, 'binary');
     });
 });
