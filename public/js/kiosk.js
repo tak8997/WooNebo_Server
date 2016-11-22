@@ -5,6 +5,6 @@ $(function(){
         });
     });
     $('#kiosk-new').click(function(){
-        window.location.assign(window.location.href + '/new');
+        window.location.assign('/admins/kiosks/new');
     });
 });

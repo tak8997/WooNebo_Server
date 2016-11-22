@@ -147,14 +147,20 @@ product.delete('/:id', function(req, res) {
                 product_id: id
             }
         }).then(function() {
-            models.product.destroy({
+            models.searchLog.destroy({
                 where: {
-                    id: id
+                    product_id: id
                 }
-            }),then(function(){
+            }).then(function() {
+                models.product.destroy({
+                    where: {
+                        id: id
+                    }
+                }).then(function(){
 
-                //성공
-                res.send('<script>alert("삭제 성공"); window.location.assign("/admins/products");</script>');
+                    //성공
+                    res.send('<script>alert("삭제 성공"); window.location.assign("/admins/products");</script>');
+                });
             });
         });
     }).catch(function(err) {

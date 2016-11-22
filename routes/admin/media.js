@@ -208,8 +208,6 @@ media.put('/:id', function(req, res) {
         });
     }).catch(function(err) {
 
-        console.log(err);
-
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
     });
@@ -246,12 +244,22 @@ media.delete('/:id', function(req, res) {
                     last_play_file_id: id
                 }
             }).then(function() {
-                models.mediaFile.destroy({
+                models.playInfo.destroy({
                     where: {
-                        id: id
+                        file_id: id
                     }
                 }).then(function() {
-                    res.send('<script>alert("삭제 성공"); window.location.assign("/admins/medias");</script>')
+                    models.mediaFile.destroy({
+                        where: {
+                            id: id
+                        }
+                    }).then(function() {
+                        res.send('<script>alert("삭제 성공"); window.location.assign("/admins/medias");</script>')
+                    }).catch(function(err) {
+                        
+                        //실패
+                        res.status(500).send('<script>alert("error"); history.back();</script>');
+                    });
                 });
             });
         });

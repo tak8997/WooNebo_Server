@@ -43,7 +43,7 @@ $(function(){
         });
     });
     $('#product-new').click(function() {
-        window.location.assign(window.location.href + '/new');
+        window.location.assign('/admins/products/new');
     });
     $('#product-img-path').css('display', 'none');
     $('#product-img').on('click', function() {

@@ -248,8 +248,7 @@ kiosk.post('/:id/play', function(req, res) {
                     transaction: t
                 }).then(function(result) {
 
-                    //실행 성공시 커밋
-                    t.commit();
+                    //성공
                     res.status(200).json({ msg: "success" });
                     res.end();
                 });
@@ -279,7 +278,6 @@ function ensureAuthentication(req, res, next) {
         attributes: ['id'],
         raw: true
     }).then(function(result) {
-        next();
         if (!result) {
 
             //사용자 존재하지 않음
