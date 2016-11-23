@@ -49,6 +49,8 @@ kiosk.get('/', function(req, res) {
         //ble 또는 gps 파라미터가 없을 시
         res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
+
+        return;
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
@@ -238,6 +240,26 @@ kiosk.post('/:id/play', function(req, res) {
             raw: true,
             transaction: t
         }).then(function(file) {
+
+            if (!file) {
+                return models.kiosk.findOne({
+                    where: {
+                        id: kioskId
+                    },
+                    attributes: ['register'],
+                    raw: true
+                }).then(function(result) {
+                    models.mediaFile.create({
+                        register: result.register,
+                        file_name: fileName
+                    }).then(function() {
+
+                        //성공
+                        res.status(200).json({ msg: "success" });
+                        res.end();
+                    });
+                });
+            }
 
             //키오스크에 현재 실행파일과 실행 시간을 기록
             return models.kiosk.update({

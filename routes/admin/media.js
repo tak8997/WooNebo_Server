@@ -133,6 +133,7 @@ media.get('/:id', function(req, res) {
             include: [{
                 model: models.product
             }],
+            order: 'play_time_at',
             raw: true
         }).then(function(result) {
             let configs = result;
@@ -256,7 +257,7 @@ media.delete('/:id', function(req, res) {
                     }).then(function() {
                         res.send('<script>alert("삭제 성공"); window.location.assign("/admins/medias");</script>')
                     }).catch(function(err) {
-                        
+
                         //실패
                         res.status(500).send('<script>alert("error"); history.back();</script>');
                     });
