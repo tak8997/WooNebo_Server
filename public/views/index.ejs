@@ -3,20 +3,21 @@
     stylesheet('/css/index.css')
     script('/js/Chart.js')
 %>
-<div class="container">
-    <div class="row">
-        <canvas class="chart"></canvas>
-        <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                기간 선택
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a id="day">지난 1일</a></li>
-                <li><a id="month">지난 1달</a></li>
-            </ul>
-        </div>
-    </div>
+<div class="col-sm-4"></div>
+<div claas="col-sm-4">
+    <canvas class="chart"></canvas>
+
+</div>
+<div class="col-sm-4"></div>
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="duration">지난 1일</i>
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a id="day">지난 1일</a></li>
+        <li><a id="month">지난 1달</a></li>
+    </ul>
 </div>
 <script>
 var ctx = $('.chart');
@@ -62,19 +63,10 @@ var option = {
         fontSize: 30,
         text: "상품 검색 기록"
     },
-    scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero: true,
-                stepSize: 1
-            }
-        }]
-    },
     legend: {
         position: 'right',
         labels: {
-            boxWidth: 0,
-            fontSize: 20
+            fontSize: 15
         }
     }
 }
@@ -86,24 +78,31 @@ var option = {
     monthly.labels.push("<%= obj.name %>");
     monthly.datasets[0].data.push(<%= obj.counts %>); <% }) %>
 
+<% if (data.daily.length === 0) { %>
+    daily.labels.push("데이터가 존재하지 않습니다.");
+    daily.datasets[0].data.push(1);
+<% } %>
+
 var chart = new Chart(ctx ,{
-    type: 'bar',
+    type: 'pie',
     data: daily,
     options: option
 });
 
 function day() {
+    $('.duration').text("지난 1일");
     chart.destroy();
     chart = new Chart(ctx ,{
-        type: 'bar',
+        type: 'pie',
         data: daily,
         options: option
     });
 }
 function month() {
+    $('.duration').text("지난 1달");
     chart.destroy();
     chart = new Chart(ctx ,{
-        type: 'bar',
+        type: 'pie',
         data: monthly,
         options: option
     });

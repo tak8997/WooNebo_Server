@@ -1,2 +1,6 @@
-.main {
-  display: block; }
+.chart {
+  max-width: 500px;
+  padding: 5px; }
+
+.btn-group {
+  padding: 5px; }
