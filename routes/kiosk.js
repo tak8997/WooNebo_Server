@@ -257,7 +257,7 @@ kiosk.post('/:id/play', function(req, res) {
 
                     //Pending 상태로 파일을 등록
                     return models.mediaFile.create({
-                        register: result.register,
+                        register: kiosk.register,
                         file_name: fileName,
                         status: "pending"
                     }).then(function() {
@@ -294,17 +294,15 @@ kiosk.post('/:id/play', function(req, res) {
                     });
                 });
             });
-        }).catch(function(err, next) {
+        }).catch(function(err) {
 
             //실패시 롤백
             t.rollback();
-            next();
-        });
-    }).catch(function(err) {
 
-        //에러 처리
-        res.status(411).json({ msg: "Invalid Parameters" });
-        res.end();
+            //에러 처리
+            res.status(411).json({ msg: "Invalid Parameters" });
+            res.end();
+        });
     });
 });
 
