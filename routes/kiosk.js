@@ -33,6 +33,7 @@ kiosk.get('/', function(req, res) {
             gps_maxDiatance = req.query.maxDistance;
         }
 
+        //현재 좌표와 최대 탐색 거리를 이용하여 좌표 범위를 역산
         let points = util.findPoints({ lat: lat, lng: lng }, gps_maxDiatance);
 
         options =  {
@@ -119,6 +120,7 @@ kiosk.get('/', function(req, res) {
                         playTimeAts[obj.id] = obj['mediaFile.mediaFileConfigs.play_time_at'];
                     }
                 } else {
+                    //다음 polling timing 계산
                     let refresh = playTimeAt - duration;
 
                     if ((refresh < validate) || (validate == 0)) {
@@ -231,59 +233,65 @@ kiosk.post('/:id/play', function(req, res) {
         let fileName = req.body.fileName;
         let now = moment().format("YYYY-MM-DD HH:mm:ss");
 
-        //파일이름을 통해 해당파일의 id조회
-        return models.mediaFile.findOne({
+        //해당 키오스크의 관리자 탐색
+        return models.kiosk.findOne({
             where: {
-                file_name: fileName
+                id: kioskId
             },
-            attributes: ['id'],
+            attributes: ['register'],
             raw: true,
             transaction: t
-        }).then(function(file) {
+        }).then(function(kiosk) {
+            return models.mediaFile.findOne({
+                where: {
+                    register: kiosk.register,
+                    file_name: fileName
+                },
+                attributes: ['id'],
+                raw: true,
+                transaction: t
+            }).then(function(file) {
 
-            if (!file) {
-                return models.kiosk.findOne({
-                    where: {
-                        id: kioskId
-                    },
-                    attributes: ['register'],
-                    raw: true
-                }).then(function(result) {
-                    models.mediaFile.create({
+                //등록 되지 않은 파일을 실행 한 경우
+                if (!file) {
+
+                    //Pending 상태로 파일을 등록
+                    return models.mediaFile.create({
                         register: result.register,
-                        file_name: fileName
+                        file_name: fileName,
+                        status: "pending"
                     }).then(function() {
 
                         //성공
                         res.status(200).json({ msg: "success" });
                         res.end();
                     });
-                });
-            }
+                }
 
-            //키오스크에 현재 실행파일과 실행 시간을 기록
-            return models.kiosk.update({
-                last_play_at: playAt,
-                last_play_file_id: file.id
-            }, {
-                where: {
-                    id: kioskId
-                },
-                transaction: t
-            }).then(function(result) {
-
-                //실행 로그 기록
-                return models.playInfo.create({
-                    file_id: file.id,
-                    kiosk_id: kioskId,
-                    play_at: now
+                //키오스크에 현재 실행파일과 실행 시간을 기록
+                return models.kiosk.update({
+                    last_play_at: playAt,
+                    last_play_file_id: file.id
                 }, {
+                    where: {
+                        id: kioskId
+                    },
                     transaction: t
                 }).then(function(result) {
 
-                    //성공
-                    res.status(200).json({ msg: "success" });
-                    res.end();
+                    //실행 로그 기록
+                    return models.playInfo.create({
+                        file_id: file.id,
+                        kiosk_id: kioskId,
+                        play_at: now
+                    }, {
+                        transaction: t
+                    }).then(function(result) {
+
+                        //성공
+                        res.status(200).json({ msg: "success" });
+                        res.end();
+                    });
                 });
             });
         }).catch(function(err, next) {

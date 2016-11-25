@@ -32,6 +32,10 @@ media.get('/', pagination, function(req, res) {
                 description: file.description
             }
 
+            if (file.status === "pending") {
+                obj.description = "등록 확인이 필요합니다.";
+            }
+
             return obj;
         });
 
@@ -52,7 +56,8 @@ media.post('/', function(req, res) {
     models.mediaFile.create({
         file_name: post.name,
         description: post.description,
-        register: req.user.id
+        register: req.user.id,
+        status: "accepted"
     }).then(function(file) {
         let configs = [];
 
@@ -172,7 +177,8 @@ media.put('/:id', function(req, res) {
     models.mediaFile.update({
         register: req.user.id,
         file_name: post.name,
-        description: post.description
+        description: post.description,
+        status: "accepted"
     }, {
         where: {
             id: req.params.id
