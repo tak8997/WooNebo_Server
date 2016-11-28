@@ -11,21 +11,24 @@ var models = require('../models');
 
 module.exports = user;
 
+//firebase 초기화 작업
 firebase.initializeApp({
     credential: firebase.credential.cert("./config/serviceAccountKey.json"),
     databaseURL: "https://woonebo-android.firebaseio.com"
 });
 
-//use auth router
+//firebase token auth
 user.post('/auth', function(req, res) {
     let idToken = req.body.idToken;
 
+    //Firebase에 저장된 데이터를 idToken을 이용하여 로드
     firebase.auth().verifyIdToken(idToken).then(function(decodedToken) {
         let user = {
             email: decodedToken.user_id,
             name: decodedToken.name
         }
 
+        //로드한 데이터를 이용하여 유저 생성 or 탐색
         models.user.findOrCreate({
             where: user,
             raw: true
@@ -38,11 +41,15 @@ user.post('/auth', function(req, res) {
                     id: result[0].id
                 }
             }).then(function(result) {
+
+                //성공
                 res.status(200).json({ msg: "success" });
                 res.end();
             });
         });
     }).catch(function(err) {
+
+        //실패
         res.status(401).json({ msg: "UnAuthorized" });
         res.end();
     });

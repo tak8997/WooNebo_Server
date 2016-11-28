@@ -60,15 +60,28 @@ media.post('/', function(req, res) {
         status: "accepted"
     }).then(function(file) {
         let configs = [];
+        let products = [];
+        let playAts = [];
 
-        //파일-상품 정보 매핑
-        for (let i=0; i < post.product.length; i++) {
+        if (typeof post.product === 'string') {
+
+            //한개의 매핑 정보가 있을 경우
             configs.push({
-                file_id: file.id,
-                product_id: post.product[i],
-                play_time_at: post.playAt[i]
+                file_id: req.params.id,
+                product_id: post.product,
+                play_time_at: post.playAt
             });
-        };
+        } else {
+
+            //키값 매핑 후 배열로 생성
+            for (let i=0; i < post.product.length; i++) {
+                configs.push({
+                    file_id: req.params.id,
+                    product_id: post.product[i],
+                    play_time_at: post.playAt[i]
+                });
+            };
+        }
 
         //config 리스트 저장
         models.mediaFileConfig.bulkCreate(configs).then(function() {
@@ -197,14 +210,25 @@ media.put('/:id', function(req, res) {
         }).then(function() {
             let configs = [];
 
-            //키값 매핑 후 배열로 생성
-            for (let i=0; i < post.product.length; i++) {
+            if (typeof post.product === 'string') {
+
+                //한개의 매핑 정보가 있을 경우
                 configs.push({
                     file_id: req.params.id,
-                    product_id: post.product[i],
-                    play_time_at: post.playAt[i]
+                    product_id: post.product,
+                    play_time_at: post.playAt
                 });
-            };
+            } else {
+
+                //키값 매핑 후 배열로 생성
+                for (let i=0; i < post.product.length; i++) {
+                    configs.push({
+                        file_id: req.params.id,
+                        product_id: post.product[i],
+                        play_time_at: post.playAt[i]
+                    });
+                };
+            }
 
             //입력 받은 파일-상품 config 저장
             models.mediaFileConfig.bulkCreate(configs).then(function() {
