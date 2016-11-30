@@ -220,7 +220,7 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
 });
 
 //키오스크가 현재 재생 정보를 보내는 REST
-kiosk.post('/:id/play', function(req, res) {
+kiosk.post('/:serial/play', function(req, res) {
 
     //Transaction 시작
     models.sequelize.transaction(function(t) {
@@ -229,16 +229,16 @@ kiosk.post('/:id/play', function(req, res) {
         }
 
         let playAt = moment().format("YYYY-MM-DD HH:mm:ss");
-        let kioskId = req.params.id;
+        let kioskSerial = req.params.serial;
         let fileName = req.body.fileName;
         let now = moment().format("YYYY-MM-DD HH:mm:ss");
 
         //해당 키오스크의 관리자 탐색
         return models.kiosk.findOne({
             where: {
-                id: kioskId
+                serial: kioskSerial
             },
-            attributes: ['register'],
+            attributes: ['id', 'register'],
             raw: true,
             transaction: t
         }).then(function(kiosk) {
@@ -274,7 +274,7 @@ kiosk.post('/:id/play', function(req, res) {
                     last_play_file_id: file.id
                 }, {
                     where: {
-                        id: kioskId
+                        serial: kioskSerial
                     },
                     transaction: t
                 }).then(function(result) {
@@ -282,7 +282,7 @@ kiosk.post('/:id/play', function(req, res) {
                     //실행 로그 기록
                     return models.playInfo.create({
                         file_id: file.id,
-                        kiosk_id: kioskId,
+                        kiosk_id: kiosk.id,
                         play_at: now
                     }, {
                         transaction: t
@@ -295,6 +295,7 @@ kiosk.post('/:id/play', function(req, res) {
                 });
             });
         }).catch(function(err) {
+            console.log(err);
 
             //실패시 롤백
             t.rollback();

@@ -16,7 +16,7 @@
         <thead>
             <tr class="header">
                 <th>ID</th>
-                <th>Description</th>
+                <th>Serial</th>
                 <th>Location (lng, lat)</th>
                 <th>BLE</th>
                 <th class="hidden-sm hidden-xs">Play File</th>
@@ -29,7 +29,7 @@
         <% kiosks.forEach(function(kiosk) { %>
             <tr class="list" id=<%= kiosk.id %> >
                 <th><%= kiosk.id %></th>
-                <td><%= kiosk.description %></td>
+                <td><%= kiosk.serial %></td>
                 <td><%= kiosk.lng %>, <%= kiosk.lat %></td>
                 <td><%= kiosk.ble %></td>
                 <td class="hidden-sm hidden-xs"><%= kiosk.last_file %></td>

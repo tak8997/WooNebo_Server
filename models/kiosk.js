@@ -4,6 +4,7 @@ module.exports = function(sequelize, DataTypes) {
     return sequelize.define('kiosk', {
         register: DataTypes.INTEGER,
         description: DataTypes.STRING,
+        serial: DataTypes.STRING,
         lat: DataTypes.DECIMAL(10, 6),
         lng: DataTypes.DECIMAL(10, 6),
         ble: DataTypes.STRING,

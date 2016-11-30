@@ -44,6 +44,7 @@ kiosk.get('/', pagination, function(req, res) {
             } else {
                 obj.last_file = obj['mediaFile.file_name'];
             }
+            value.serial = obj.serial;
             value.create_at = moment(obj.create_at).format('MM/DD HH:mm');
             value.update_at = moment(obj.update_at).format('MM/DD HH:mm');
 
@@ -67,6 +68,7 @@ kiosk.post('/', function(req, res) {
         lat: req.body.lat,
         lng: req.body.lng,
         ble: req.body.ble,
+        serial: req.body.serial,
         register: req.user.id
     };
 
@@ -117,7 +119,8 @@ kiosk.put('/:kioskId', function(req, res) {
         description: req.body.description,
         lat: req.body.lat,
         lng: req.body.lng,
-        ble: req.body.ble
+        ble: req.body.ble,
+        serial: req.body.serial
     };
     let kioskId = req.params.kioskId;
 
