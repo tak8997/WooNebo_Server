@@ -27,7 +27,6 @@ kiosk.get('/', function(req, res) {
         let lat = req.query.lat;
         let lng = req.query.lng;
 
-
         //최대 거리 파라미터 존재 시 (없을 경우 default value 사용)
         if (req.query.maxDistance) {
             gps_maxDiatance = req.query.maxDistance;
@@ -47,11 +46,11 @@ kiosk.get('/', function(req, res) {
 
     } else {
 
-        // //ble 또는 gps 파라미터가 없을 시
-        // res.status(411).json({ msg: "Invalid Parameters" });
-        // res.end();
-        //
-        // return;
+        //ble 또는 gps 파라미터가 없을 시
+        res.status(411).json({ msg: "Invalid Parameters" });
+        res.end();
+
+        return;
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
@@ -163,7 +162,6 @@ kiosk.get('/', function(req, res) {
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
-        console.log(err);
 
         //에러
         res.status(411).json({ msg: "Invalid Parameters" });

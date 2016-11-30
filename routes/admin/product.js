@@ -5,7 +5,7 @@ var product = express.Router();
 var moment = require('moment');
 
 var models = require('../../models');
-var limit = 5;
+var limit = 10;
 
 
 module.exports = product;

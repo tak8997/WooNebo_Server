@@ -43,7 +43,6 @@ media.get('/', pagination, function(req, res) {
         //성공
         res.render('media/index', { title: '파일 목록', files: files, locals: res.locals, admin: req.user });
     }).catch(function(err) {
-        console.log(err);
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
