@@ -18,6 +18,7 @@
                 <th>ID</th>
                 <th>File Name</th>
                 <th>Description</th>
+                <th>Total Play Time (seconds)</th>
                 <th></th>
             </tr>
         </thead>
@@ -27,6 +28,7 @@
                 <td><%= file.id %></td>
                 <td><%= file.name %></td>
                 <td><%= file.description %></td>
+                <th><%= file.totalPlayTime %></th>
                 <td class="delete-media"><input type="button" class="btn btn-warning btn-xs delete-button" value="X"/></td>
             </tr>
         <% }); %>

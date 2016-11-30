@@ -29,7 +29,8 @@ media.get('/', pagination, function(req, res) {
             let obj = {
                 id: file.id,
                 name: file.file_name,
-                description: file.description
+                description: file.description,
+                totalPlayTime: file.total_play_time
             }
 
             if (file.status === "pending") {
@@ -42,6 +43,7 @@ media.get('/', pagination, function(req, res) {
         //성공
         res.render('media/index', { title: '파일 목록', files: files, locals: res.locals, admin: req.user });
     }).catch(function(err) {
+        console.log(err);
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -56,6 +58,7 @@ media.post('/', function(req, res) {
     models.mediaFile.create({
         file_name: post.name,
         description: post.description,
+        total_play_time: post.total_play_time,
         register: req.user.id,
         status: "accepted"
     }).then(function(file) {
@@ -138,7 +141,8 @@ media.get('/:id', function(req, res) {
         let file = {
             id: result.id,
             name: result.file_name,
-            description: result.description
+            description: result.description,
+            totalPlayTime: result.total_play_time
         };
 
         //해당 파일의 config정보 검색
@@ -191,6 +195,7 @@ media.put('/:id', function(req, res) {
         register: req.user.id,
         file_name: post.name,
         description: post.description,
+        total_play_time: post.total_play_time,
         status: "accepted"
     }, {
         where: {

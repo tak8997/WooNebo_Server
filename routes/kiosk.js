@@ -47,11 +47,11 @@ kiosk.get('/', function(req, res) {
 
     } else {
 
-        //ble 또는 gps 파라미터가 없을 시
-        res.status(411).json({ msg: "Invalid Parameters" });
-        res.end();
-
-        return;
+        // //ble 또는 gps 파라미터가 없을 시
+        // res.status(411).json({ msg: "Invalid Parameters" });
+        // res.end();
+        //
+        // return;
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
@@ -73,7 +73,7 @@ kiosk.get('/', function(req, res) {
                 }],
                 attributes: ['play_time_at']
             }],
-            attributes: []
+            attributes: ['total_play_time']
         }],
         attributes: ['id', 'description', 'last_play_at'],
         order: ['id', [models.mediaFile, models.mediaFileConfig, 'play_time_at']],
@@ -84,13 +84,26 @@ kiosk.get('/', function(req, res) {
         let playTimeAts = {};
         let length = 0;
         let validate = 0;
+        let fileEnd = 0;
 
         //현재 재생 상품에 맞게 매핑
         kiosks.map(function(obj) {
+            let playAt = moment(obj.last_play_at);
+            let playTimeAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
+            let duration = moment(Date.now()).diff(playAt, 'seconds');
+            let total = Number.parseInt(obj['mediaFile.total_play_time']);
+            let totalDuration = total - duration;
+
+            //총 광고 시간이 등록 된 것만 연산
+            if (totalDuration > 0) {
+
+                //파일 종료 시점이 가장 짧은 것 선택
+                if ((fileEnd === 0) || (fileEnd > totalDuration)) {
+                    fileEnd = totalDuration;
+                }
+            }
+
             if (!list[obj.id]) {
-                let playAt = moment(obj.last_play_at);
-                let playTimeAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
-                let duration = moment(Date.now()).diff(playAt, 'seconds');
 
                 //재생되지 않은 상품인지 확인
                 if ((duration - playTimeAt) >= 0) {
@@ -104,9 +117,6 @@ kiosk.get('/', function(req, res) {
                     length++;
                 }
             } else {
-                let playAt = moment(obj.last_play_at);
-                let playTimeAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
-                let duration = moment(Date.now()).diff(playAt, 'seconds');
 
                 //현재 재생되지 않았고 기록해 놨던 상품보다 나중에 재생되는 상품인지 확인
                 if ((duration - playTimeAt) >= 0) {
@@ -120,15 +130,26 @@ kiosk.get('/', function(req, res) {
                         playTimeAts[obj.id] = obj['mediaFile.mediaFileConfigs.play_time_at'];
                     }
                 } else {
+
                     //다음 polling timing 계산
                     let refresh = playTimeAt - duration;
 
-                    if ((refresh < validate) || (validate == 0)) {
+                    if ((refresh < validate) || (validate === 0)) {
                         validate = refresh;
                     }
                 }
             }
         });
+
+
+        //총 광고 시간이 입력 된 경우에만 연산
+        if (fileEnd > 0) {
+
+            //파일 종료 시점이 더 짧을 경우
+            if ((fileEnd < validate) || validate === 0) {
+                validate = fileEnd;
+            }
+        }
 
         //최종 결과 생성
         for (let id in list) {
@@ -142,6 +163,7 @@ kiosk.get('/', function(req, res) {
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
+        console.log(err);
 
         //에러
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -295,7 +317,6 @@ kiosk.post('/:serial/play', function(req, res) {
                 });
             });
         }).catch(function(err) {
-            console.log(err);
 
             //실패시 롤백
             t.rollback();
