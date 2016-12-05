@@ -16,7 +16,7 @@ product.get('/:id', ensureAuthentication, function(req, res) {
         where: {
             id: id
         },
-        attributes: ['id', 'description', ['product_name', 'name'], 'image', 'url', 'price'],
+        attributes: ['id', ['description', 'desc'], ['product_name', 'name'], 'image', 'url', 'price'],
         raw: true
     }).then(function(result) {
 
