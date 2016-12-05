@@ -105,7 +105,7 @@ kiosk.get('/:kioskId', function(req, res) {
     }).then(function(kiosk) {
 
         //성공
-        res.render('kiosk/edit', { title: '키오스크 변경', kiosk: kiosk, admin: req.user  });
+        res.render('kiosk/edit', { title: '키오스크 변경', kiosk: kiosk, admin: req.user });
     }).catch(function(err) {
 
         //실패

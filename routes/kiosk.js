@@ -3,6 +3,7 @@
 var express = require('express');
 var kiosk = express.Router();
 var moment = require('moment');
+var request = require('request');
 require('underscore');
 
 var models = require('../models');
@@ -323,6 +324,19 @@ kiosk.post('/:serial/play', function(req, res) {
             res.status(411).json({ msg: "Invalid Parameters" });
             res.end();
         });
+    });
+});
+
+//키오스크 실행 시 받는 REST
+kiosk.get('/:serial/initialize', function(req, res) {
+    let serial = req.params.serial;
+    let adv_req = {
+        url: "http://menucloud.co.kr/devices/" + serial + ".json",
+        json: true
+    }
+
+    request.get(adv_req, function(err, response, body) {
+        res.json(body);
     });
 });
 
