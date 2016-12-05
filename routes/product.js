@@ -16,12 +16,12 @@ product.get('/:id', ensureAuthentication, function(req, res) {
         where: {
             id: id
         },
-        attributes: ['id', 'description', 'image', 'url', 'price'],
+        attributes: ['id', 'description', ['product_name', 'name'], 'image', 'url', 'price'],
         raw: true
     }).then(function(result) {
 
         models.user.create({ user_id: res.locals.user, product_id: result.id, search_at: moment().format('YYYY-MM-DD HH:mm:ss') });
-        
+
         res.status(200).json(result);
         res.end();
 
