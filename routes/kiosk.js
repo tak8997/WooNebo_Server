@@ -46,7 +46,7 @@ kiosk.get('/', function(req, res) {
         }
 
     } else {
-
+        
         //ble 또는 gps 파라미터가 없을 시
         res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
@@ -69,7 +69,7 @@ kiosk.get('/', function(req, res) {
 
                     //join products table
                     model: models.product,
-                    attributes: [['product_name', 'name'], 'description', 'image']
+                    attributes: ['id', ['product_name', 'name'], 'description', 'image']
                 }],
                 attributes: ['play_time_at']
             }],
@@ -109,6 +109,7 @@ kiosk.get('/', function(req, res) {
                 if ((duration - playTimeAt) >= 0) {
                     list[obj.id] = {
                         desc: obj.description,
+                        product_id: obj['mediaFile.mediaFileConfigs.product.id'],
                         product_name: obj['mediaFile.mediaFileConfigs.product.name'],
                         product_image: obj['mediaFile.mediaFileConfigs.product.image'],
                         product_desc: obj['mediaFile.mediaFileConfigs.product.description']
@@ -123,6 +124,7 @@ kiosk.get('/', function(req, res) {
                     if (playTimeAt > playTimeAts[obj.id]) {
                         list[obj.id] = {
                             desc: obj.description,
+                            product_id: obj['mediaFile.mediaFileConfigs.product.id'],
                             product_name: obj['mediaFile.mediaFileConfigs.product.name'],
                             product_image: obj['mediaFile.mediaFileConfigs.product.image'],
                             product_desc: obj['mediaFile.mediaFileConfigs.product.description']
