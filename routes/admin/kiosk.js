@@ -68,6 +68,7 @@ kiosk.post('/', function(req, res) {
         lat: req.body.lat,
         lng: req.body.lng,
         ble: req.body.ble,
+        image: req.body.image,
         serial: req.body.serial,
         register: req.user.id
     };
@@ -120,6 +121,7 @@ kiosk.put('/:kioskId', function(req, res) {
         lat: req.body.lat,
         lng: req.body.lng,
         ble: req.body.ble,
+        image: req.body.image,
         serial: req.body.serial
     };
     let kioskId = req.params.kioskId;

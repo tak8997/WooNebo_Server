@@ -46,7 +46,7 @@ kiosk.get('/', function(req, res) {
         }
 
     } else {
-        
+
         //ble 또는 gps 파라미터가 없을 시
         res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
@@ -75,7 +75,7 @@ kiosk.get('/', function(req, res) {
             }],
             attributes: ['total_play_time']
         }],
-        attributes: ['id', 'description', 'last_play_at'],
+        attributes: ['id', 'description', 'last_play_at', 'image'],
         order: ['id', [models.mediaFile, models.mediaFileConfig, 'play_time_at']],
         raw: true
     }).then(function(kiosks) {
@@ -109,6 +109,7 @@ kiosk.get('/', function(req, res) {
                 if ((duration - playTimeAt) >= 0) {
                     list[obj.id] = {
                         desc: obj.description,
+                        image: obj.image,
                         product_id: obj['mediaFile.mediaFileConfigs.product.id'],
                         product_name: obj['mediaFile.mediaFileConfigs.product.name'],
                         product_image: obj['mediaFile.mediaFileConfigs.product.image'],
@@ -124,6 +125,7 @@ kiosk.get('/', function(req, res) {
                     if (playTimeAt > playTimeAts[obj.id]) {
                         list[obj.id] = {
                             desc: obj.description,
+                            image: obj.image,
                             product_id: obj['mediaFile.mediaFileConfigs.product.id'],
                             product_name: obj['mediaFile.mediaFileConfigs.product.name'],
                             product_image: obj['mediaFile.mediaFileConfigs.product.image'],
@@ -142,7 +144,6 @@ kiosk.get('/', function(req, res) {
                 }
             }
         });
-
 
         //총 광고 시간이 입력 된 경우에만 연산
         if (fileEnd > 0) {
@@ -172,7 +173,7 @@ kiosk.get('/', function(req, res) {
     });
 });
 
-//키오스크에서 재생되는 상품의 상세 정보를 요청받는 REST
+//키오스크에서 재생되는 상품을 요청받는 REST
 kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
     let kioskId = Number.parseInt(req.params.id);
 
@@ -227,9 +228,6 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
             image: product['mediaFile.mediaFileConfigs.product.image'],
             url: product['mediaFile.mediaFileConfigs.product.url']
         };
-
-        //검색 로그
-        models.searchLog.create({ user_id: res.locals.user, product_id: result.id, search_at: moment().format('YYYY-MM-DD HH:mm:ss') });
 
         //성공
         res.status(200).json(result);

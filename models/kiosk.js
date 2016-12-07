@@ -8,6 +8,7 @@ module.exports = function(sequelize, DataTypes) {
         lat: DataTypes.DECIMAL(10, 6),
         lng: DataTypes.DECIMAL(10, 6),
         ble: DataTypes.STRING,
+        image: DataTypes.STRING,
         last_play_file_id: DataTypes.INTEGER,
         last_play_at: DataTypes.DATE
     }, {
