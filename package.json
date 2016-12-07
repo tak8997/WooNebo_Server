@@ -22,9 +22,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "pm2 start server.js --name woonebo",
-    "dev": "pm2 start server.js --name woonebo --watch"
+    "test": "pm2 start server.js --name woonebo --watch",
+    "start": "pm2 start server.js --name woonebo"
   },
   "repository": {
     "type": "git",

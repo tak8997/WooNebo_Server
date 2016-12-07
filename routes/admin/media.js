@@ -69,7 +69,7 @@ media.post('/', function(req, res) {
 
             //한개의 매핑 정보가 있을 경우
             configs.push({
-                file_id: req.params.id,
+                file_id: file.id,
                 product_id: post.product,
                 play_time_at: post.playAt
             });
@@ -78,7 +78,7 @@ media.post('/', function(req, res) {
             //키값 매핑 후 배열로 생성
             for (let i=0; i < post.product.length; i++) {
                 configs.push({
-                    file_id: req.params.id,
+                    file_id: file.id,
                     product_id: post.product[i],
                     play_time_at: post.playAt[i]
                 });

@@ -20,7 +20,7 @@ product.get('/:id', ensureAuthentication, function(req, res) {
         raw: true
     }).then(function(result) {
 
-        models.user.create({ user_id: res.locals.user, product_id: result.id, search_at: moment().format('YYYY-MM-DD HH:mm:ss') });
+        models.searchLog.create({ user_id: res.locals.user, product_id: result.id, search_at: moment().format('YYYY-MM-DD HH:mm:ss') });
 
         res.status(200).json(result);
         res.end();
