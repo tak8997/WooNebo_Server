@@ -22,7 +22,9 @@ kiosk.get('/', function(req, res) {
         options = {
             ble: req.query.ble
         }
-    } else if (req.query.lat && req.query.lng) {
+    }
+
+    if (req.query.lat && req.query.lng) {
 
         //gps 파라미터 존재 시
         let lat = req.query.lat;
@@ -47,125 +49,32 @@ kiosk.get('/', function(req, res) {
 
     } else {
 
-        //ble 또는 gps 파라미터가 없을 시
-        res.status(411).json({ msg: "Invalid Parameters" });
-        res.end();
-
-        return;
+        // //ble 또는 gps 파라미터가 없을 시
+        // res.status(411).json({ msg: "Invalid Parameters" });
+        // res.end();
+        //
+        // return;
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
     models.kiosk.findAll({
         where: options,
-        include: [{
-
-            //join media_files table
-            model: models.mediaFile,
-            include: [{
-
-                //join media_file_configs table
-                model: models.mediaFileConfig,
-                include: [{
-
-                    //join products table
-                    model: models.product,
-                    attributes: ['id', ['product_name', 'name'], 'description', 'image']
-                }],
-                attributes: ['play_time_at']
-            }],
-            attributes: ['total_play_time']
-        }],
-        attributes: ['id', 'description', 'last_play_at', 'image'],
-        order: ['id', [models.mediaFile, models.mediaFileConfig, 'play_time_at']],
+        attributes: ['id', 'description', 'image'],
         raw: true
     }).then(function(kiosks) {
         let result = { kiosks: [], counts: 0 };
-        let list = {};
-        let playTimeAts = {};
-        let length = 0;
-        let validate = 0;
-        let fileEnd = 0;
 
-        //현재 재생 상품에 맞게 매핑
-        kiosks.map(function(obj) {
-            let playAt = moment(obj.last_play_at);
-            let playTimeAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
-            let duration = moment(Date.now()).diff(playAt, 'seconds');
-            let total = Number.parseInt(obj['mediaFile.total_play_time']);
-            let totalDuration = total - duration;
-
-            //총 광고 시간이 등록 된 것만 연산
-            if (totalDuration > 0) {
-
-                //파일 종료 시점이 가장 짧은 것 선택
-                if ((fileEnd === 0) || (fileEnd > totalDuration)) {
-                    fileEnd = totalDuration;
-                }
-            }
-
-            if (!list[obj.id]) {
-
-                //재생되지 않은 상품인지 확인
-                if ((duration - playTimeAt) >= 0) {
-                    list[obj.id] = {
-                        desc: obj.description,
-                        image: obj.image,
-                        product_id: obj['mediaFile.mediaFileConfigs.product.id'],
-                        product_name: obj['mediaFile.mediaFileConfigs.product.name'],
-                        product_image: obj['mediaFile.mediaFileConfigs.product.image'],
-                        product_desc: obj['mediaFile.mediaFileConfigs.product.description']
-                    };
-                    playTimeAts[obj.id] = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
-                    length++;
-                }
-            } else {
-
-                //현재 재생되지 않았고 기록해 놨던 상품보다 나중에 재생되는 상품인지 확인
-                if ((duration - playTimeAt) >= 0) {
-                    if (playTimeAt > playTimeAts[obj.id]) {
-                        list[obj.id] = {
-                            desc: obj.description,
-                            image: obj.image,
-                            product_id: obj['mediaFile.mediaFileConfigs.product.id'],
-                            product_name: obj['mediaFile.mediaFileConfigs.product.name'],
-                            product_image: obj['mediaFile.mediaFileConfigs.product.image'],
-                            product_desc: obj['mediaFile.mediaFileConfigs.product.description']
-                        };
-                        playTimeAts[obj.id] = obj['mediaFile.mediaFileConfigs.play_time_at'];
-                    }
-                } else {
-
-                    //다음 polling timing 계산
-                    let refresh = playTimeAt - duration;
-
-                    if ((refresh < validate) || (validate === 0)) {
-                        validate = refresh;
-                    }
-                }
-            }
-        });
-
-        //총 광고 시간이 입력 된 경우에만 연산
-        if (fileEnd > 0) {
-
-            //파일 종료 시점이 더 짧을 경우
-            if ((fileEnd < validate) || validate === 0) {
-                validate = fileEnd;
-            }
-        }
-
-        //최종 결과 생성
-        for (let id in list) {
-            list[id].id = id;
-            result.kiosks.push(list[id]);
-        }
+        kiosks.forEach(function(obj) {
+            result.kiosks.push(obj);
+            result.counts++;
+        })
 
         //성공
-        result.counts = length;
-        result.validate_seconds = validate;
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
+
+        console.log(err);
 
         //에러
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -174,7 +83,7 @@ kiosk.get('/', function(req, res) {
 });
 
 //키오스크에서 재생되는 상품을 요청받는 REST
-kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
+kiosk.get('/:id/products', function(req, res) {
     let kioskId = Number.parseInt(req.params.id);
 
     //키오스크 id를 통해 현재 실행중인 파일 조회
@@ -196,43 +105,22 @@ kiosk.get('/:id/products', ensureAuthentication, function(req, res) {
                     model: models.product,
                     attributes: [['product_name', 'name'], 'price', 'description', 'image', 'url']
                 }],
-                attributes: ['play_time_at']
+                attributes: ['play_time_at', 'display_time']
             }],
-            attributes: []
+            attributes: ['total_play_time']
         }],
         attributes: ['last_play_at'],
+        order: [[models.mediaFile, models.mediaFileConfig, 'play_time_at']],
         raw: true
     }).then(function(products) {
-
-        //키오스크 재생으로부터 지난 시간
-        let duration = moment(Date.now()).diff(products[0].last_play_at, 'seconds');
-
-        //현재 시점에 재생 되고 있는 상품 선택
-        let product = products.reduce(function(memo, obj) {
-            let after = duration - Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
-            let before = duration - Number.parseInt(memo['mediaFile.mediaFileConfigs.play_time_at']);
-
-            if ((after <= before) && (after >= 0)) {
-                return obj;
-            } else {
-                return memo;
-            }
-        }, { 'mediaFile.mediaFileConfigs.play_time_at': 0 });
-
-        //결과로 보내 줄 파라미터 매핑
-        let result = {
-            id: product['mediaFile.mediaFileConfigs.product.id'],
-            name: product['mediaFile.mediaFileConfigs.product.name'],
-            price: product['mediaFile.mediaFileConfigs.product.price'],
-            desc: product['mediaFile.mediaFileConfigs.product.description'],
-            image: product['mediaFile.mediaFileConfigs.product.image'],
-            url: product['mediaFile.mediaFileConfigs.product.url']
-        };
+        let result = displayProducts(products);
 
         //성공
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
+
+        console.log(err);
 
         //실패
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -327,7 +215,7 @@ kiosk.post('/:serial/play', function(req, res) {
     });
 });
 
-//키오스크 실행 시 받는 REST
+//키오스크(mcBoard) 실행 시 받는 REST
 kiosk.get('/:serial/initialize', function(req, res) {
     let serial = req.params.serial;
     let adv_req = {
@@ -367,4 +255,74 @@ function ensureAuthentication(req, res, next) {
         res.status(500).json({ msg: "error" });
         res.end();
     });
+}
+
+//광고 화면에 노출 중인 상품 리스트를 선택하는 함수
+function displayProducts(products) {
+    let result = { products: [], validate_time: 0 };
+    let duration = moment().diff(products[0].last_play_at, 'seconds');
+    let total = Number.parseInt(products[0]['mediaFile.total_play_time']);
+    let validate = total - duration;
+    let candidate = { playAt: 0, product: {} };
+
+    //키오스크와 동기화 되어 있지 않음
+    if (validate < 0) {
+        return ;
+    }
+
+    //노출중인 상품 선택
+    products.map(function(obj) {
+        let playAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
+        let displayTime = Number.parseInt(obj['mediaFile.mediaFileConfigs.display_time']);
+
+        //현재 노출중일 지도 모르는 상품
+        if (duration > playAt) {
+
+            //현재 노출중인 상품
+            if (duration < playAt + displayTime) {
+                let product = {
+                    id: obj['mediaFile.mediaFileConfigs.product.id'],
+                    name: obj['mediaFile.mediaFileConfigs.product.name'],
+                    desc: obj['mediaFile.mediaFileConfigs.product.description'],
+                    image: obj['mediaFile.mediaFileConfigs.product.image']
+                }
+
+                result.products.push(product);
+            } else {
+
+                //이미 노출이 끝난 상품
+                if (candidate.playAt < playAt || playAt === 0) {
+
+                    //타임라인이 비어있는 경우를 대비한 후보 상품
+                    let product = {
+                        id: obj['mediaFile.mediaFileConfigs.product.id'],
+                        name: obj['mediaFile.mediaFileConfigs.product.name'],
+                        desc: obj['mediaFile.mediaFileConfigs.product.description'],
+                        image: obj['mediaFile.mediaFileConfigs.product.image']
+                    }
+
+                    candidate.playAt = playAt;
+                    candidate.product = product;
+                }
+            }
+        } else {
+
+            //아직 노출되지 않은 상품
+            if (validate > playAt) {
+                validate = playAt;
+            }
+        }
+    });
+
+    //next polling timeing
+    validate = validate - duration;
+
+    //타임라인이 비어있는 경우 후보상품을 전달
+    if (result.products.length === 0) {
+        result.products.push(candidate.product);
+    }
+
+    result.validate_time = validate;
+
+    return result;
 }

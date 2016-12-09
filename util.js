@@ -5,7 +5,7 @@ var util = function() {};
 
 module.exports = util;
 
-util.findPoints = function(location, max) {
+util.prototype.findPoints = function(location, max) {
     let result = {
         lat: {},
         lng: {}
@@ -29,7 +29,7 @@ util.findPoints = function(location, max) {
     return result;
 
 }
-util.transform = function(data, type) {
+util.prototype.transform = function(data, type) {
     const pi = Math.PI;
 
     if (type === "degree") {

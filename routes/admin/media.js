@@ -71,7 +71,8 @@ media.post('/', function(req, res) {
             configs.push({
                 file_id: file.id,
                 product_id: post.product,
-                play_time_at: post.playAt
+                play_time_at: post.playAt,
+                display_time: post.displayTime
             });
         } else {
 
@@ -80,7 +81,8 @@ media.post('/', function(req, res) {
                 configs.push({
                     file_id: file.id,
                     product_id: post.product[i],
-                    play_time_at: post.playAt[i]
+                    play_time_at: post.playAt[i],
+                    display_time: post.displayTime[i]
                 });
             };
         }
@@ -220,7 +222,8 @@ media.put('/:id', function(req, res) {
                 configs.push({
                     file_id: req.params.id,
                     product_id: post.product,
-                    play_time_at: post.playAt
+                    play_time_at: post.playAt,
+                    display_time: post.displayTime
                 });
             } else {
 
@@ -229,7 +232,8 @@ media.put('/:id', function(req, res) {
                     configs.push({
                         file_id: req.params.id,
                         product_id: post.product[i],
-                        play_time_at: post.playAt[i]
+                        play_time_at: post.playAt[i],
+                        display_time: post.displayTime[i]
                     });
                 };
             }

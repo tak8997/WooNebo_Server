@@ -5,8 +5,9 @@
         <table class="table table-striped">
             <thead>
                 <tr class="header">
-                    <th>Product</th>
-                    <th>Play At (s)</th>
+                    <th>상품명</th>
+                    <th>노출 시작 시점 (s)</th>
+                    <th>총 노출 시간 (s)</th>
                     <th><input type="button" class="btn btn-success btn-xs add" value="+"/></th>
                 </tr>
             </thead>
@@ -22,7 +23,8 @@
                         <% }) %>
                         </select>
                     </td>
-                    <td><input type="number" name="playAt" class="play-at" value="<%= config.play_time_at %>"/></td>
+                    <td><input type="number" name="playAt" class="play-at" step="1" value="<%= config.play_time_at %>"/></td>
+                    <td><input type="number" name="displayTime" class="play-at" min="1" step="1" value="<%= config.display_time %>"/></td>
                     <td><input type="button" class="btn btn-warning btn-xs delete" value="X" /></td>
                 </tr>
             <% }); %>
@@ -37,7 +39,8 @@
                         <% }) %>
                         </select>
                     </td>
-                    <td><input type="number" name="playAt" class="play-at" value="0"/></td>
+                    <td><input type="number" name="playAt" step="1" class="play-at" value="0"/></td>
+                    <td><input type="number" name="displayTime" min="1" step="1" class="play-at" value="0"/></td>
                     <td><input type="button" class="btn btn-warning btn-xs delete" value="X" /></td>
                 </tr>
             <% } %>
