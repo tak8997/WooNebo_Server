@@ -49,17 +49,17 @@ kiosk.get('/', function(req, res) {
 
     } else {
 
-        // //ble 또는 gps 파라미터가 없을 시
-        // res.status(411).json({ msg: "Invalid Parameters" });
-        // res.end();
-        //
-        // return;
+        //ble 또는 gps 파라미터가 없을 시
+        res.status(411).json({ msg: "Invalid Parameters" });
+        res.end();
+
+        return;
     }
 
     //전달 받은 파라미터를 바탕으로 kiosk검색
     models.kiosk.findAll({
         where: options,
-        attributes: ['id', 'description', 'image'],
+        attributes: ['id', ['description', 'desc'], 'image'],
         raw: true
     }).then(function(kiosks) {
         let result = { kiosks: [], counts: 0 };
@@ -73,8 +73,6 @@ kiosk.get('/', function(req, res) {
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
-
-        console.log(err);
 
         //에러
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -119,8 +117,6 @@ kiosk.get('/:id/products', function(req, res) {
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
-
-        console.log(err);
 
         //실패
         res.status(411).json({ msg: "Invalid Parameters" });
