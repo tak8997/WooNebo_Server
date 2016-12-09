@@ -47,7 +47,9 @@ kiosk.get('/', function(req, res) {
             }
         }
 
-    } else {
+    }
+
+    if (options === {}) {
 
         //ble 또는 gps 파라미터가 없을 시
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -73,6 +75,7 @@ kiosk.get('/', function(req, res) {
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
+        console.log(err);
 
         //에러
         res.status(411).json({ msg: "Invalid Parameters" });
