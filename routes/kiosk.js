@@ -49,7 +49,7 @@ kiosk.get('/', function(req, res) {
 
     }
 
-    if (options === {}) {
+    if (Object.keys(options).legnth === 0) {
 
         //ble 또는 gps 파라미터가 없을 시
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -266,7 +266,7 @@ function displayProducts(products) {
 
     //키오스크와 동기화 되어 있지 않음
     if (validate < 0) {
-        return ;
+        return result;
     }
 
     //노출중인 상품 선택
