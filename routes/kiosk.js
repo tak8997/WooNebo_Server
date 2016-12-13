@@ -17,13 +17,14 @@ module.exports = kiosk;
 kiosk.get('/', function(req, res) {
     let options = {};
 
-    //ble파라미터 존재 시
+    //ble 파라미터 존재 시
     if (req.query.ble) {
         options = {
             ble: req.query.ble
         }
     }
 
+    //gps 파라미터 존재
     if (req.query.lat && req.query.lng) {
 
         //gps 파라미터 존재 시
@@ -75,7 +76,6 @@ kiosk.get('/', function(req, res) {
         res.status(200).json(result);
         res.end();
     }).catch(function(err) {
-        console.log(err);
 
         //에러
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -264,9 +264,18 @@ function displayProducts(products) {
     let validate = total - duration;
     let candidate = { playAt: 0, product: {} };
 
+    //키오스크에서 어떠한 파일도 실행하지 않았을 경우
+    if (products[0].last_play_at === null) {
+        return result;
+    }
+
     //키오스크와 동기화 되어 있지 않음
     if (validate < 0) {
-        return result;
+        if (total !== 0) {
+            return result;
+        } else {
+            validate = 0;
+        }
     }
 
     //노출중인 상품 선택
@@ -308,13 +317,10 @@ function displayProducts(products) {
 
             //아직 노출되지 않은 상품
             if (validate > playAt) {
-                validate = playAt;
+                validate = playAt - duration;
             }
         }
     });
-
-    //next polling timeing
-    validate = validate - duration;
 
     //타임라인이 비어있는 경우 후보상품을 전달
     if (result.products.length === 0) {

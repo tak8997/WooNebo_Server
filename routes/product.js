@@ -31,6 +31,29 @@ product.get('/:id', ensureAuthentication, function(req, res) {
     });
 });
 
+product.get('/:id/star', ensureAuthentication, function(req, res) {
+    let id = req.params.id;
+
+    models.product.findOne({
+        where: {
+            id: id
+        },
+        attributes: ['key'],
+        raw: true
+    }).then((product)=>{
+        models.popularity.create({
+            user_id: res.locals.user,
+            key: product.key
+        }).then(()=>{
+            res.status(200).json({ msg: "Success" });
+            res.end();
+        });
+    }).catch((err)=>{
+        res.status(411).json({ msg: "Invalid Parameters" });
+        res.end();
+    });
+});
+
 
 //인증여부 세션 검사
 function ensureAuthentication(req, res, next) {

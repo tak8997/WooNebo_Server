@@ -27,15 +27,13 @@ admin.get('/', function(req, res) {
                     $gte: moment().subtract(1, 'days').format('YYYY-MM-DD')
                 }
             },
-            include: [
-                {
-                    model: models.product,
-                    where: {
-                        register: req.user.id
-                    },
-                    attributes: [['product_name', 'name']]
-                }
-            ],
+            include: [{
+                model: models.product,
+                where: {
+                    register: req.user.id
+                },
+                attributes: [['product_name', 'name']]
+            }],
             attributes: [
                 [ models.sequelize.fn('count', '*'), 'counts' ]
             ],

@@ -4,7 +4,8 @@ module.exports = function(sequelize, DataTypes) {
         description: DataTypes.STRING,
         total_play_time: DataTypes.INTEGER,
         status: DataTypes.STRING,
-        register: DataTypes.INTEGER
+        register: DataTypes.INTEGER,
+        key: DataTypes.INTEGER
     }, {
         timestamps: true,
         createdAt: 'create_at',

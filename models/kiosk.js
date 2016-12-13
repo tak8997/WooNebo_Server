@@ -1,5 +1,3 @@
-var models = require('./');
-
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define('kiosk', {
         register: DataTypes.INTEGER,
