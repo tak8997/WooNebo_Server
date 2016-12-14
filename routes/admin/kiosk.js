@@ -86,7 +86,7 @@ kiosk.post('/', function(req, res) {
 
 //키오스크 등록 포멧 페이지
 kiosk.get('/new', function(req, res) {
-    res.render('kiosk/new', { title: '키오스크 등록', kiosk: { id: 'auto', description: "", ble: "" }, admin: req.user });
+    res.render('kiosk/new', { title: '키오스크 등록', kiosk: { id: 'auto', description: "", ble: "", serial: "" }, admin: req.user });
 });
 
 //키오스크 상세 정보 페이지

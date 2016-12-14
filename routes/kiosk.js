@@ -274,7 +274,7 @@ function displayProducts(products) {
         if (total !== 0) {
             return result;
         } else {
-            validate = 0;
+            validate = total;
         }
     }
 
@@ -284,7 +284,7 @@ function displayProducts(products) {
         let displayTime = Number.parseInt(obj['mediaFile.mediaFileConfigs.display_time']);
 
         //현재 노출중일 지도 모르는 상품
-        if (duration > playAt) {
+        if (duration >= playAt) {
 
             //현재 노출중인 상품
             if (duration < playAt + displayTime) {
@@ -316,7 +316,7 @@ function displayProducts(products) {
         } else {
 
             //아직 노출되지 않은 상품
-            if (validate > playAt) {
+            if (validate > playAt - duration) {
                 validate = playAt - duration;
             }
         }
@@ -325,6 +325,10 @@ function displayProducts(products) {
     //타임라인이 비어있는 경우 후보상품을 전달
     if (result.products.length === 0) {
         result.products.push(candidate.product);
+    } else {
+        if (validate === 0) {
+            validate = 1;
+        }
     }
 
     result.validate_time = validate;
