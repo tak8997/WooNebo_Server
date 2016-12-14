@@ -11,14 +11,14 @@ module.exports = passport;
 passport.use('admin-local', new LocalStrategy({
         usernameField: 'email',
         passwordField: 'password'
-    }, function(email, password, callback) {
+    }, (email, password, callback)=>{
         models.admin.findOne({
             where: {
                 email: email
             },
             attributes: ['id', 'email', ['pwd', 'password'], 'name'],
             raw: true
-        }).then(function(admin) {
+        }).then((admin)=>{
             if (!admin) return callback(null, false);
             if (admin.password !== sha256(password)) return callback(null, false);
 
@@ -28,22 +28,22 @@ passport.use('admin-local', new LocalStrategy({
                 where: {
                     id: admin.id
                 }
-            }).then(function() {
+            }).then(()=>{
                 return callback(null, admin);
             });
-        }).catch(function(err) {
+        }).catch((err)=>{
             callback(err);
         });
     }
 ));
 
-passport.serializeUser(function(admin, done) {
+passport.serializeUser((admin, done)=>{
     done(null, admin);
 });
-passport.deserializeUser(function(admin, done) {
-    models.admin.findById(admin.id).then(function(admin) {
+passport.deserializeUser((admin, done)=>{
+    models.admin.findById(admin.id).then((admin)=>{
         done(null, admin);
-    }).catch(function(err) {
+    }).catch((err)=>{
         done(err);
     });
 });

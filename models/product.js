@@ -5,8 +5,7 @@ module.exports = function(sequelize, DataTypes) {
         price: DataTypes.INTEGER,
         image: DataTypes.STRING,
         description: DataTypes.STRING,
-        url: DataTypes.STRING,
-        key: DataTypes.INTEGER
+        url: DataTypes.STRING
     }, {
         timestamps: true,
         createdAt: 'create_at',

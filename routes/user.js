@@ -18,11 +18,11 @@ firebase.initializeApp({
 });
 
 //firebase token auth
-user.post('/auth', function(req, res) {
+user.post('/auth', (req, res)=>{
     let idToken = req.body.idToken;
 
     //Firebase에 저장된 데이터를 idToken을 이용하여 로드
-    firebase.auth().verifyIdToken(idToken).then(function(decodedToken) {
+    firebase.auth().verifyIdToken(idToken).then((decodedToken)=>{
         let user = {
             email: decodedToken.user_id,
             name: decodedToken.name
@@ -32,7 +32,7 @@ user.post('/auth', function(req, res) {
         models.user.findOrCreate({
             where: user,
             raw: true
-        }).then(function(result) {
+        }).then((result)=>{
             models.user.update({
                 token: idToken,
                 last_login_at: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -40,14 +40,14 @@ user.post('/auth', function(req, res) {
                 where: {
                     id: result[0].id
                 }
-            }).then(function(result) {
+            }).then((result)=>{
 
                 //성공
                 res.status(200).json({ msg: "success" });
                 res.end();
             });
         });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(401).json({ msg: "UnAuthorized" });

@@ -11,7 +11,7 @@ var limit = 10;
 module.exports = product;
 
 //관리자가 등록한 상품 리스트 페이지
-product.get('/', pagination, function(req, res) {
+product.get('/', pagination, (req, res)=>{
     var page = req.query.page || 1;
 
     //관리자가 등록한 상품 검색
@@ -22,8 +22,8 @@ product.get('/', pagination, function(req, res) {
         offset: (page - 1) * limit,
         limit: limit,
         raw: true
-    }).then(function(products) {
-        let result = products.map(function(product) {
+    }).then((products)=>{
+        let result = products.map((product)=>{
             let value = product;
 
             value.create_at = moment(product.create_at).format('MM/DD HH:mm');
@@ -32,14 +32,14 @@ product.get('/', pagination, function(req, res) {
 
         //성공
         res.render('product/index', { title: '상품 목록', products: products, locals: res.locals, admin: req.user });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
     });
 });
 
-product.post('/', function(req, res) {
+product.post('/', (req, res)=>{
     let product = {
         description: req.body.description,
         price: req.body.price,
@@ -49,11 +49,11 @@ product.post('/', function(req, res) {
     };
     product.register = req.user.id;
 
-    models.product.create(product).then(function() {
+    models.product.create(product).then(()=>{
 
         //성공
         res.send('<script>alert("등록 성공"); window.location.assign("/admins/products");</script>');
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -61,12 +61,12 @@ product.post('/', function(req, res) {
 });
 
 //등록 form 페이지
-product.get('/new', function(req, res) {
+product.get('/new', (req, res)=>{
     res.render('product/new', { title: '상품 등록', product: { product_name: "", description: "", price: "", url: "" }, admin: req.user });
 });
 
 //상품 상세 정보 페이지
-product.get('/:id', function(req, res) {
+product.get('/:id', (req, res)=>{
     let id = Number.parseInt(req.params.id);
 
     if (!id) {
@@ -80,11 +80,11 @@ product.get('/:id', function(req, res) {
             register: req.user.id
         },
         raw: true
-    }).then(function(product) {
+    }).then((product)=>{
 
         //성공
         res.render('product/edit', { title: '상품 정보 변경', product: product, admin: req.user  });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -92,7 +92,7 @@ product.get('/:id', function(req, res) {
 });
 
 //상품 상세 정보 변경 페이지
-product.put('/:id', function(req, res) {
+product.put('/:id', (req, res)=>{
     let product = {
         description: req.body.description,
         price: req.body.price,
@@ -108,7 +108,7 @@ product.put('/:id', function(req, res) {
             id: productId,
             register: req.user.id
         }
-    }).then(function(result) {
+    }).then((result)=>{
 
         //비정상 접근
         if (result[0] === 0) {
@@ -118,7 +118,7 @@ product.put('/:id', function(req, res) {
 
         //성공
         res.send('<script>alert("변경 성공"); window.location.assign("/admins/products");</script>');
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -126,7 +126,7 @@ product.put('/:id', function(req, res) {
 });
 
 //상품 삭제 REST
-product.delete('/:id', function(req, res) {
+product.delete('/:id', (req, res)=>{
     let id = req.params.id;
 
     models.product.count({
@@ -134,7 +134,7 @@ product.delete('/:id', function(req, res) {
             id: id,
             register: req.user.id
         }
-    }).then(function(result) {
+    }).then((result)=>{
 
         //비정상 접근
         if (result === 0) {
@@ -146,24 +146,24 @@ product.delete('/:id', function(req, res) {
             where: {
                 product_id: id
             }
-        }).then(function() {
+        }).then(()=>{
             models.searchLog.destroy({
                 where: {
                     product_id: id
                 }
-            }).then(function() {
+            }).then(()=>{
                 models.product.destroy({
                     where: {
                         id: id
                     }
-                }).then(function(){
+                }).then(()=>{
 
                     //성공
                     res.send('<script>alert("삭제 성공"); window.location.assign("/admins/products");</script>');
                 });
             });
         });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -180,7 +180,7 @@ function pagination(req, res, next) {
         where: {
             register: req.user.id
         }
-    }).then(function(total) {
+    }).then((total)=>{
         res.locals.total = total;
         res.locals.pages = Math.ceil(total / limit);
         res.locals.page = page;

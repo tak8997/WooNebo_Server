@@ -9,7 +9,7 @@ var models = require('../models');
 
 module.exports = product;
 
-product.get('/:id', ensureAuthentication, function(req, res) {
+product.get('/:id', ensureAuthentication, (req, res)=>{
     let id = req.params.id;
 
     models.product.findOne({
@@ -18,36 +18,28 @@ product.get('/:id', ensureAuthentication, function(req, res) {
         },
         attributes: ['id', ['description', 'desc'], ['product_name', 'name'], 'image', 'url', 'price'],
         raw: true
-    }).then(function(result) {
+    }).then((result)=>{
 
         models.searchLog.create({ user_id: res.locals.user, product_id: result.id, search_at: moment().format('YYYY-MM-DD HH:mm:ss') });
 
         res.status(200).json(result);
         res.end();
 
-    }).catch(function(err) {
+    }).catch((err)=>{
         res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
     });
 });
 
-product.get('/:id/star', ensureAuthentication, function(req, res) {
+product.post('/:id/star', ensureAuthentication, (req, res)=>{
     let id = req.params.id;
 
-    models.product.findOne({
-        where: {
-            id: id
-        },
-        attributes: ['key'],
-        raw: true
-    }).then((product)=>{
-        models.popularity.create({
-            user_id: res.locals.user,
-            key: product.key
-        }).then(()=>{
-            res.status(200).json({ msg: "Success" });
-            res.end();
-        });
+    models.popularity.create({
+        user_id: res.locals.user,
+        product_id: id
+    }).then(()=>{
+        res.status(200).json({ msg: "Success" });
+        res.end();
     }).catch((err)=>{
         res.status(411).json({ msg: "Invalid Parameters" });
         res.end();
@@ -57,13 +49,21 @@ product.get('/:id/star', ensureAuthentication, function(req, res) {
 
 //인증여부 세션 검사
 function ensureAuthentication(req, res, next) {
+    let token;
+
+    if (req.method === "GET") {
+        token = req.query.idToken;
+    } else {
+        token = req.body.idToken;
+    }
+
     models.user.findOne({
         where: {
-            token: req.query.idToken
+            token: token
         },
         attributes: ['id'],
         raw: true
-    }).then(function(result) {
+    }).then((result)=>{
         if (!result) {
 
             //사용자 존재하지 않음
@@ -75,7 +75,7 @@ function ensureAuthentication(req, res, next) {
             res.locals.user = result.id;
             next();
         }
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //에러
         res.status(500).json({ msg: "error" });

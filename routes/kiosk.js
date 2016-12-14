@@ -4,6 +4,7 @@ var express = require('express');
 var kiosk = express.Router();
 var moment = require('moment');
 var request = require('request');
+var sequelize = require('sequelize');
 require('underscore');
 
 var models = require('../models');
@@ -14,7 +15,7 @@ var gps_maxDiatance = 100;
 module.exports = kiosk;
 
 //현재 위치나 BLE를 기반으로 하여 키오스크의 정보를 요청받는 REST
-kiosk.get('/', function(req, res) {
+kiosk.get('/', (req, res)=>{
     let options = {};
 
     //ble 파라미터 존재 시
@@ -64,18 +65,18 @@ kiosk.get('/', function(req, res) {
         where: options,
         attributes: ['id', ['description', 'desc'], 'image'],
         raw: true
-    }).then(function(kiosks) {
+    }).then((kiosks)=>{
         let result = { kiosks: [], counts: 0 };
 
-        kiosks.forEach(function(obj) {
+        kiosks.forEach((obj)=>{
             result.kiosks.push(obj);
             result.counts++;
-        })
+        });
 
         //성공
         res.status(200).json(result);
         res.end();
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //에러
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -84,7 +85,7 @@ kiosk.get('/', function(req, res) {
 });
 
 //키오스크에서 재생되는 상품을 요청받는 REST
-kiosk.get('/:id/products', function(req, res) {
+kiosk.get('/:id/products', (req, res)=>{
     let kioskId = Number.parseInt(req.params.id);
 
     //키오스크 id를 통해 현재 실행중인 파일 조회
@@ -113,13 +114,14 @@ kiosk.get('/:id/products', function(req, res) {
         attributes: ['last_play_at'],
         order: [[models.mediaFile, models.mediaFileConfig, 'play_time_at']],
         raw: true
-    }).then(function(products) {
-        let result = displayProducts(products);
+    }).then((products)=>{
+        displayProducts(products).then((list)=>{
 
-        //성공
-        res.status(200).json(result);
-        res.end();
-    }).catch(function(err) {
+            //성공
+            res.status(200).json(list);
+            res.end();
+        });
+    }).catch((err)=>{
 
         //실패
         res.status(411).json({ msg: "Invalid Parameters" });
@@ -128,10 +130,10 @@ kiosk.get('/:id/products', function(req, res) {
 });
 
 //키오스크가 현재 재생 정보를 보내는 REST
-kiosk.post('/:serial/play', function(req, res) {
+kiosk.post('/:serial/play', (req, res)=>{
 
     //Transaction 시작
-    models.sequelize.transaction(function(t) {
+    models.sequelize.transaction((t)=>{
         if (!req.body.fileName) {
             throw null;
         }
@@ -149,7 +151,7 @@ kiosk.post('/:serial/play', function(req, res) {
             attributes: ['id', 'register'],
             raw: true,
             transaction: t
-        }).then(function(kiosk) {
+        }).then((kiosk)=>{
             return models.mediaFile.findOne({
                 where: {
                     register: kiosk.register,
@@ -158,7 +160,7 @@ kiosk.post('/:serial/play', function(req, res) {
                 attributes: ['id'],
                 raw: true,
                 transaction: t
-            }).then(function(file) {
+            }).then((file)=>{
 
                 //등록 되지 않은 파일을 실행 한 경우
                 if (!file) {
@@ -168,7 +170,7 @@ kiosk.post('/:serial/play', function(req, res) {
                         register: kiosk.register,
                         file_name: fileName,
                         status: "pending"
-                    }).then(function() {
+                    }).then(()=>{
 
                         //성공
                         res.status(200).json({ msg: "success" });
@@ -185,7 +187,7 @@ kiosk.post('/:serial/play', function(req, res) {
                         serial: kioskSerial
                     },
                     transaction: t
-                }).then(function(result) {
+                }).then((result)=>{
 
                     //실행 로그 기록
                     return models.playInfo.create({
@@ -194,7 +196,7 @@ kiosk.post('/:serial/play', function(req, res) {
                         play_at: now
                     }, {
                         transaction: t
-                    }).then(function(result) {
+                    }).then((result)=>{
 
                         //성공
                         res.status(200).json({ msg: "success" });
@@ -202,7 +204,7 @@ kiosk.post('/:serial/play', function(req, res) {
                     });
                 });
             });
-        }).catch(function(err) {
+        }).catch((err)=>{
 
             //실패시 롤백
             t.rollback();
@@ -215,14 +217,14 @@ kiosk.post('/:serial/play', function(req, res) {
 });
 
 //키오스크(mcBoard) 실행 시 받는 REST
-kiosk.get('/:serial/initialize', function(req, res) {
+kiosk.get('/:serial/initialize', (req, res)=>{
     let serial = req.params.serial;
     let adv_req = {
         url: "http://menucloud.co.kr/devices/" + serial + ".json",
         json: true
     }
 
-    request.get(adv_req, function(err, response, body) {
+    request.get(adv_req, (err, response, body)=>{
         res.json(body);
     });
 });
@@ -236,7 +238,7 @@ function ensureAuthentication(req, res, next) {
         },
         attributes: ['id'],
         raw: true
-    }).then(function(result) {
+    }).then((result)=>{
         if (!result) {
 
             //사용자 존재하지 않음
@@ -248,7 +250,7 @@ function ensureAuthentication(req, res, next) {
             res.locals.user = result.id;
             next();
         }
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //에러
         res.status(500).json({ msg: "error" });
@@ -263,23 +265,24 @@ function displayProducts(products) {
     let total = Number.parseInt(products[0]['mediaFile.total_play_time']);
     let validate = total - duration;
     let candidate = { playAt: 0, product: {} };
+    let keyword = [];
 
     //키오스크에서 어떠한 파일도 실행하지 않았을 경우
     if (products[0].last_play_at === null) {
-        return result;
+        return Promise.resolve(result);
     }
 
     //키오스크와 동기화 되어 있지 않음
     if (validate < 0) {
         if (total !== 0) {
-            return result;
+            return Promise.resolve(result);
         } else {
             validate = total;
         }
     }
 
     //노출중인 상품 선택
-    products.map(function(obj) {
+    products.map((obj)=>{
         let playAt = Number.parseInt(obj['mediaFile.mediaFileConfigs.play_time_at']);
         let displayTime = Number.parseInt(obj['mediaFile.mediaFileConfigs.display_time']);
 
@@ -294,6 +297,8 @@ function displayProducts(products) {
                     desc: obj['mediaFile.mediaFileConfigs.product.description'],
                     image: obj['mediaFile.mediaFileConfigs.product.image']
                 }
+
+                keyword.push({id: product.id, key: obj['mediaFile.mediaFileConfigs.product.key']})
 
                 result.products.push(product);
             } else {
@@ -322,16 +327,61 @@ function displayProducts(products) {
         }
     });
 
+    result.validate_time = validate;
+
     //타임라인이 비어있는 경우 후보상품을 전달
     if (result.products.length === 0) {
-        result.products.push(candidate.product);
+        if (candidate.product) {
+            result.products.push(candidate.product);
+        }
     } else {
         if (validate === 0) {
             validate = 1;
         }
     }
 
-    result.validate_time = validate;
+    let ids = [];
+
+    result.products.map((product)=>{
+        ids.push(product.id);
+    });
+
+    return new Promise((resolve, reject)=>{
+        models.popularity.findAll({
+            where: {
+                product_id: {
+                    $in: ids
+                }
+            },
+            attributes: [['product_id', 'id'], [sequelize.fn('count', sequelize.col('product_id')), 'pop']],
+            raw: true
+        }).then((pop)=>{
+            result.products = productPop(result.products, pop);
+
+            resolve(result);
+        });
+    });
+}
+
+function productPop(products, pop) {
+    let result = [];
+    let pops = {};
+
+    pop.map((obj)=>{
+        pops[obj.id] = obj.pop;
+    });
+
+    products.map((product)=>{
+        let obj = product;
+
+        if (pops[product.id] !== undefined) {
+            obj.prior = pops[product.id];
+        } else {
+            obj.prior = 0;
+        }
+
+        result.push(obj);
+    });
 
     return result;
 }

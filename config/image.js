@@ -7,8 +7,8 @@ var fs = require('fs');
 
 module.exports = image;
 
-image.get('/:name', function(req, res) {
-    let img = fs.readFile('public/uploads/' + req.params.name, function(err, data) {
+image.get('/:name', (req, res)=>{
+    let img = fs.readFile('public/uploads/' + req.params.name, (err, data)=>{
         if (err) {
             res.writeHead(411);
             res.end();

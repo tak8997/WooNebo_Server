@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "dependencies": {
+    "asyncawait": "^1.0.6",
     "body-parser": "^1.15.2",
     "connect-multiparty": "^2.0.0",
     "ejs-locals": "^1.0.2",

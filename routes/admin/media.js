@@ -11,7 +11,7 @@ var limit = 10;
 module.exports = media;
 
 //등록 파일 리스트 페이지
-media.get('/', pagination, function(req, res) {
+media.get('/', pagination, (req, res)=>{
     var page = req.query.page || 1;
 
     //관리자가 등록한 상품 검색
@@ -22,10 +22,10 @@ media.get('/', pagination, function(req, res) {
         offset: (page - 1) * limit,
         limit: limit,
         raw: true
-    }).then(function(result) {
+    }).then((result)=>{
 
         //결과 매핑
-        let files = result.map(function(file) {
+        let files = result.map((file)=>{
             let obj = {
                 id: file.id,
                 name: file.file_name,
@@ -42,7 +42,7 @@ media.get('/', pagination, function(req, res) {
 
         //성공
         res.render('media/index', { title: '파일 목록', files: files, locals: res.locals, admin: req.user });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -50,7 +50,7 @@ media.get('/', pagination, function(req, res) {
 });
 
 //파일 정보 등록 페이지
-media.post('/', function(req, res) {
+media.post('/', (req, res)=>{
     let post = req.body;
 
     //파일 정보 저장
@@ -60,7 +60,7 @@ media.post('/', function(req, res) {
         total_play_time: post.total_play_time,
         register: req.user.id,
         status: "accepted"
-    }).then(function(file) {
+    }).then((file)=>{
         let configs = [];
         let products = [];
         let playAts = [];
@@ -88,12 +88,12 @@ media.post('/', function(req, res) {
         }
 
         //config 리스트 저장
-        models.mediaFileConfig.bulkCreate(configs).then(function() {
+        models.mediaFileConfig.bulkCreate(configs).then(()=>{
 
             //성공
             res.send('<script>alert("등록 성공"); window.location.assign("/admins/medias");</script>');
         });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -101,7 +101,7 @@ media.post('/', function(req, res) {
 });
 
 //새로운 파일 등록 form 페이지
-media.get('/new', function(req, res) {
+media.get('/new', (req, res)=>{
 
     //해당 관리자가 등록한 상품의 목록 검색
     models.product.findAll({
@@ -109,7 +109,7 @@ media.get('/new', function(req, res) {
             register: req.user.id
         },
         raw: true
-    }).then(function(result) {
+    }).then((result)=>{
         let products = result;
 
         //페이지 로딩
@@ -120,7 +120,7 @@ media.get('/new', function(req, res) {
             products: products,
             admin: req.user
         })
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -128,7 +128,7 @@ media.get('/new', function(req, res) {
 });
 
 //파일 정보 변경 form 페이지
-media.get('/:id', function(req, res) {
+media.get('/:id', (req, res)=>{
 
     //id를 기반으로 검색
     models.mediaFile.findOne({
@@ -136,7 +136,7 @@ media.get('/:id', function(req, res) {
             id: req.params.id
         },
         raw: true
-    }).then(function(result) {
+    }).then((result)=>{
 
         //key값 매핑
         let file = {
@@ -158,7 +158,7 @@ media.get('/:id', function(req, res) {
             }],
             order: 'play_time_at',
             raw: true
-        }).then(function(result) {
+        }).then((result)=>{
             let configs = result;
 
             //해당 관리자가 등록한 상품 목록 검색
@@ -167,7 +167,7 @@ media.get('/:id', function(req, res) {
                     register: req.user.id
                 },
                 raw: true
-            }).then(function(result) {
+            }).then((result)=>{
                 let products = result;
 
                 //성공
@@ -180,7 +180,7 @@ media.get('/:id', function(req, res) {
                 });
             });
         });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -188,7 +188,7 @@ media.get('/:id', function(req, res) {
 });
 
 //파일 정보 변경 REST
-media.put('/:id', function(req, res) {
+media.put('/:id', (req, res)=>{
     let post = req.body;
 
     //파일 정보 변경
@@ -203,7 +203,7 @@ media.put('/:id', function(req, res) {
             id: req.params.id
         },
         raw: true
-    }).then(function(result) {
+    }).then((result)=>{
         if (result[0] !== 1) {
             throw null;
         }
@@ -213,7 +213,7 @@ media.put('/:id', function(req, res) {
             where: {
                 file_id: req.params.id
             }
-        }).then(function() {
+        }).then(()=>{
             let configs = [];
 
             if (typeof post.product === 'string') {
@@ -239,13 +239,13 @@ media.put('/:id', function(req, res) {
             }
 
             //입력 받은 파일-상품 config 저장
-            models.mediaFileConfig.bulkCreate(configs).then(function() {
+            models.mediaFileConfig.bulkCreate(configs).then(()=>{
 
                 //성공
                 res.send('<script>alert("변경 성공"); window.location.assign("/admins/medias");</script>');
             });
         });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -253,7 +253,7 @@ media.put('/:id', function(req, res) {
 });
 
 //파일 정보를 지우는 REST
-media.delete('/:id', function(req, res) {
+media.delete('/:id', (req, res)=>{
     let id = req.params.id;
 
     //전달 받은 파일이 해당 관리자의 소유인지 확인
@@ -262,7 +262,7 @@ media.delete('/:id', function(req, res) {
             id: id,
             register: req.user.id
         }
-    }).then(function(result) {
+    }).then((result)=>{
 
         //자신이 등록한 상품이 아닌 것을 지우려는 접근
         if (result === 0) {
@@ -275,26 +275,26 @@ media.delete('/:id', function(req, res) {
             where: {
                 file_id: id
             }
-        }).then(function() {
+        }).then(()=>{
             models.kiosk.update({
                 last_play_file_id: null
             }, {
                 where: {
                     last_play_file_id: id
                 }
-            }).then(function() {
+            }).then(()=>{
                 models.playInfo.destroy({
                     where: {
                         file_id: id
                     }
-                }).then(function() {
+                }).then(()=>{
                     models.mediaFile.destroy({
                         where: {
                             id: id
                         }
-                    }).then(function() {
+                    }).then(()=>{
                         res.send('<script>alert("삭제 성공"); window.location.assign("/admins/medias");</script>')
-                    }).catch(function(err) {
+                    }).catch((err)=>{
 
                         //실패
                         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -302,7 +302,7 @@ media.delete('/:id', function(req, res) {
                 });
             });
         });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -319,7 +319,7 @@ function pagination(req, res, next) {
         where: {
             register: req.user.id
         }
-    }).then(function(total) {
+    }).then((total)=>{
         res.locals.total = total;
         res.locals.pages = Math.ceil(total / limit);
         res.locals.page = page;

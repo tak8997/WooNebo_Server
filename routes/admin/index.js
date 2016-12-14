@@ -19,7 +19,7 @@ var redirects = {
 module.exports = admin;
 
 //admin index page
-admin.get('/', function(req, res) {
+admin.get('/', (req, res)=>{
     if (req.isAuthenticated()) {
         models.searchLog.findAll({
             where: {
@@ -41,8 +41,8 @@ admin.get('/', function(req, res) {
             order: 'counts DESC',
             limit: 10,
             raw: true
-        }).then(function(result) {
-            let daily = result.map(function(product) {
+        }).then((result)=>{
+            let daily = result.map((product)=>{
                 return { name: product['product.name'], counts: product.counts };
             });
 
@@ -68,14 +68,14 @@ admin.get('/', function(req, res) {
                 order: 'counts DESC',
                 limit: 10,
                 raw: true
-            }).then(function(result) {
-                let monthly = result.map(function(product) {
+            }).then((result)=>{
+                let monthly = result.map((product)=>{
                     return { name: product['product.name'], counts: product.counts };
                 });
 
                 res.render('index', { title: 'admin page', data: { daily: daily, monthly: monthly }, admin: req.user });
             });
-        }).catch(function(err) {
+        }).catch((err)=>{
             res.status(500);
             res.end();
         });
@@ -85,10 +85,10 @@ admin.get('/', function(req, res) {
 });
 
 //admin login page
-admin.get('/login', function(req, res) {
+admin.get('/login', (req, res)=>{
     res.render('login', { title: 'login', admin: req.user });
 });
-admin.get('/logout', function(req, res) {
+admin.get('/logout', (req, res)=>{
     req.logout();
     res.redirect('/admins');
 });
@@ -102,7 +102,7 @@ admin.use('/products', ensureAuthentication, product);
 admin.use('/medias', ensureAuthentication, media);
 
 //존재하지 않는 REST접근시 index 페이지로 이동
-admin.all('*', function(req, res) {
+admin.all('*', (req, res)=>{
     res.redirect('/admins');
 });
 

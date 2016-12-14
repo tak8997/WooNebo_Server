@@ -8,12 +8,12 @@ var fs = require('fs');
 
 module.exports = upload;
 
-upload.post('/', ensureAuthentication, function (req, res) {
-    fs.readFile(req.files.uploadFile.path, function(error, data) {
+upload.post('/', ensureAuthentication, (req, res)=>{
+    fs.readFile(req.files.uploadFile.path, (error, data)=>{
         let fileName = shortid.generate();
         let filePath = "public/uploads/" + fileName;
 
-        fs.writeFile(filePath, data, function(error) {
+        fs.writeFile(filePath, data, (error)=>{
             if (error) {
                 res.status(404);
                 res.redirect('back');

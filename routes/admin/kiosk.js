@@ -12,7 +12,7 @@ var limit = 10;
 module.exports = kiosk;
 
 //키오스크 리스트 페이지
-kiosk.get('/', pagination, function(req, res) {
+kiosk.get('/', pagination, (req, res)=>{
     var page = req.query.page || 1;
 
     //관리자가 등록한 키오스크 검색
@@ -28,10 +28,10 @@ kiosk.get('/', pagination, function(req, res) {
             attributes: ['file_name']
         }],
         raw: true
-    }).then(function(kiosks) {
+    }).then((kiosks)=>{
 
         //검색 결과를 매핑
-        let result = kiosks.map(function(obj) {
+        let result = kiosks.map((obj)=>{
             let value = obj;
 
             if (!obj.last_play_at) {
@@ -53,7 +53,7 @@ kiosk.get('/', pagination, function(req, res) {
 
         //성공
         res.render('kiosk/index', { title: '키오스크 관리', kiosks: kiosks, locals: res.locals, admin: req.user });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //에러
         res.status(411).send('<script>alert("error"); history.back();</script>');
@@ -62,7 +62,7 @@ kiosk.get('/', pagination, function(req, res) {
 });
 
 //키오스크 등록
-kiosk.post('/', function(req, res) {
+kiosk.post('/', (req, res)=>{
     let kiosk = {
         description: req.body.description,
         lat: req.body.lat,
@@ -73,11 +73,11 @@ kiosk.post('/', function(req, res) {
         register: req.user.id
     };
 
-    models.kiosk.create(kiosk).then(function() {
+    models.kiosk.create(kiosk).then(()=>{
 
         //성공
         res.status(200).send('<script>alert("키오스크 등록 성공"); window.location.assign("/admins/kiosks")</script>');
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -85,12 +85,12 @@ kiosk.post('/', function(req, res) {
 });
 
 //키오스크 등록 포멧 페이지
-kiosk.get('/new', function(req, res) {
+kiosk.get('/new', (req, res)=>{
     res.render('kiosk/new', { title: '키오스크 등록', kiosk: { id: 'auto', description: "", ble: "", serial: "" }, admin: req.user });
 });
 
 //키오스크 상세 정보 페이지
-kiosk.get('/:kioskId', function(req, res) {
+kiosk.get('/:kioskId', (req, res)=>{
     let kioskId = Number.parseInt(req.params.kioskId);
 
     if (!kioskId) {
@@ -103,11 +103,11 @@ kiosk.get('/:kioskId', function(req, res) {
             id: kioskId
         },
         raw: true
-    }).then(function(kiosk) {
+    }).then((kiosk)=>{
 
         //성공
         res.render('kiosk/edit', { title: '키오스크 변경', kiosk: kiosk, admin: req.user });
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -115,7 +115,7 @@ kiosk.get('/:kioskId', function(req, res) {
 });
 
 //키오스크 상세 정보 변경
-kiosk.put('/:kioskId', function(req, res) {
+kiosk.put('/:kioskId', (req, res)=>{
     let kiosk = {
         description: req.body.description,
         lat: req.body.lat,
@@ -131,11 +131,11 @@ kiosk.put('/:kioskId', function(req, res) {
         where: {
             id: kioskId
         }
-    }).then(function() {
+    }).then(()=>{
 
         //성공
         res.status(200).send('<script>alert("키오스크 변경 성공"); window.location.assign("/admins/kiosks")</script>');
-    }).catch(function(err) {
+    }).catch((err)=>{
 
         //실패
         res.status(500).send('<script>alert("error"); history.back();</script>');
@@ -152,7 +152,7 @@ function pagination(req, res, next) {
         where: {
             register: req.user.id
         }
-    }).then(function(total) {
+    }).then((total)=>{
         res.locals.total = total;
         res.locals.pages = Math.ceil(total / limit);
         res.locals.page = page;

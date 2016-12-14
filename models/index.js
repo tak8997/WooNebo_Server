@@ -3,7 +3,7 @@ var options = {
     timezone: '+09:00',
     logging: false
 }
-var sequelize = new Sequelize('mysql://woonebo:dbmysql@localhost:3306/woonebo', options);
+var sequelize = new Sequelize('mysql://test:dbmysql@metenets.com:3306/woonebo', options);
 
 //load models
 var models = [
@@ -35,8 +35,8 @@ models.forEach(function(model) {
     m.user.hasMany(m.popularity, { foreignKey: 'user_id' });
     m.product.hasMany(m.searchLog, { foreignKey: 'product_id' });
     m.product.hasMany(m.mediaFileConfig, { foreignKey: 'product_id' });
+    m.product.hasMany(m.popularity, { foreignKey: 'product_id' });
     m.keyword.hasMany(m.mediaFile, { foreignKey: 'key' });
-    m.keyword.hasMany(m.popularity, { foreignKey: 'key' });
 
     m.kiosk.belongsTo(m.admin, { foreignKey: 'register' });
     m.kiosk.belongsTo(m.mediaFile, { foreignKey: 'last_play_file_id' });
@@ -49,7 +49,7 @@ models.forEach(function(model) {
     m.searchLog.belongsTo(m.user, { foreignKey: 'user_id' });
     m.searchLog.belongsTo(m.product, { foreignKey: 'product_id' });
     m.popularity.belongsTo(m.user, { foreignKey: 'user_id' });
-    m.popularity.belongsTo(m.keyword, { foreignKey: 'key' });
+    m.popularity.belongsTo(m.product, { foreignKey: 'product_id' });
 })(module.exports);
 
 sequelize
