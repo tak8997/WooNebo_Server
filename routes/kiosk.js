@@ -109,17 +109,36 @@ kiosk.get('/:id/products', (req, res)=>{
                 }],
                 attributes: ['play_time_at', 'display_time']
             }],
-            attributes: ['total_play_time']
+            attributes: ['total_play_time', 'key']
         }],
         attributes: ['last_play_at'],
         order: [[models.mediaFile, models.mediaFileConfig, 'play_time_at']],
         raw: true
     }).then((products)=>{
+
+        //현재 노출 중인 상품 선택
         displayProducts(products).then((list)=>{
 
-            //성공
-            res.status(200).json(list);
-            res.end();
+            //노출 상품이 없는 경우
+            if (list.products.length === 0) {
+                models.keyword.findOne({
+                    where: {
+                        id: products[0]['mediaFile.key']
+                    },
+                    raw: true
+                }).then((keyword)=>{
+                    let link = `https://www.google.co.kr/?gfe_rd=cr&ei=Zk5TWPyHOqvK8gfW1ZK4Dw#q=${keyword.word}`;
+                    let result = { type: 1, reference: link };
+
+                    //노출될 만한 상품이 없을 경우 전부 키워드를 통한 링크를 전송
+                    res.status(200).json(result);
+                    res.end();
+                });
+            } else {
+                //성공
+                res.status(200).json(list);
+                res.end();
+            }
         });
     }).catch((err)=>{
 
@@ -260,7 +279,7 @@ function ensureAuthentication(req, res, next) {
 
 //광고 화면에 노출 중인 상품 리스트를 선택하는 함수
 function displayProducts(products) {
-    let result = { products: [], validate_time: 0 };
+    let result = { products: [], validate_time: 0, type: 0 };
     let duration = moment().diff(products[0].last_play_at, 'seconds');
     let total = Number.parseInt(products[0]['mediaFile.total_play_time']);
     let validate = total - duration;
@@ -298,7 +317,7 @@ function displayProducts(products) {
                     image: obj['mediaFile.mediaFileConfigs.product.image']
                 }
 
-                keyword.push({id: product.id, key: obj['mediaFile.mediaFileConfigs.product.key']})
+                keyword.push({ id: product.id, key: obj['mediaFile.mediaFileConfigs.product.key'] })
 
                 result.products.push(product);
             } else {
@@ -327,8 +346,6 @@ function displayProducts(products) {
         }
     });
 
-    result.validate_time = validate;
-
     //타임라인이 비어있는 경우 후보상품을 전달
     if (result.products.length === 0) {
         if (candidate.product) {
@@ -339,6 +356,8 @@ function displayProducts(products) {
             validate = 1;
         }
     }
+
+    result.validate_time = validate;
 
     let ids = [];
 

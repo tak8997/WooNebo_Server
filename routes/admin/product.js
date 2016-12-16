@@ -39,6 +39,7 @@ product.get('/', pagination, (req, res)=>{
     });
 });
 
+//상품 등록 REST
 product.post('/', (req, res)=>{
     let product = {
         description: req.body.description,

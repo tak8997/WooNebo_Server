@@ -3,7 +3,9 @@ module.exports = function(sequelize, DataTypes) {
         user_id: DataTypes.INTEGER,
         product_id: DataTypes.INTEGER
     }, {
-        timestamps: false,
+        timestamps: true,
+        createdAt: 'create_at',
+        updatedAt: false,
         tableName: 'popularities'
     });
 };

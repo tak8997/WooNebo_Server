@@ -3,7 +3,7 @@ var options = {
     timezone: '+09:00',
     logging: false
 }
-var sequelize = new Sequelize('mysql://test:dbmysql@metenets.com:3306/woonebo', options);
+var sequelize = new Sequelize('mysql://woonebo:dbmysql@localhost:3306/woonebo', options);
 
 //load models
 var models = [
