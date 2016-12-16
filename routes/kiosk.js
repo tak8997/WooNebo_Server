@@ -4,6 +4,7 @@ import express from 'express';
 import moment from 'moment';
 import request from 'request';
 import sequelize from 'sequelize';
+import encoder from 'encodeurl';
 import 'underscore';
 
 import models from '../models';
@@ -128,7 +129,7 @@ kiosk.get('/:id/products', (req, res)=>{
                     },
                     raw: true
                 }).then((keyword)=>{
-                    let link = `https://search.naver.com/search.naver?where=nexearch&query=${keyword.word}&sm=top_hty&fbm=1&ie=utf8`;
+                    let link = `https://search.naver.com/search.naver?where=nexearch&query=${encoder(keyword.word)}&sm=top_hty&fbm=1&ie=utf8`;
                     let result = { type: 1, reference: link };
 
                     //노출될 만한 상품이 없을 경우 전부 키워드를 통한 링크를 전송

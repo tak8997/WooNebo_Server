@@ -7,6 +7,7 @@
     "body-parser": "^1.15.2",
     "connect-multiparty": "^2.0.0",
     "ejs-locals": "^1.0.2",
+    "encodeurl": "^1.0.1",
     "express": "4.14.0",
     "express-session": "^1.14.2",
     "firebase-admin": "^4.0.2",
