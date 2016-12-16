@@ -1,9 +1,10 @@
 'use strict';
 
-var express = require('express');
+import express from 'express';
+import shortid from 'shortid';
+import fs from 'fs';
+
 var upload = express.Router();
-var shortid = require('shortid');
-var fs = require('fs');
 
 
 module.exports = upload;

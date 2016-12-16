@@ -1,11 +1,12 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = express();
-var multipart = require('connect-multiparty');
+import express from 'express';
+import bodyParser from 'body-parser';
+import multipart from 'connect-multiparty';
 
-var passport = require('passport');
-var router = require('./router');
-var errorHandler = require('./errorHandler');
+import passport from 'passport';
+import router from './router';
+import errorHandler from './errorHandler';
+
+var app = express();
 // var https = require('https');
 // var fs = require('fs');
 // var key = fs.readFileSync('./key.pem');

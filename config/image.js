@@ -1,8 +1,9 @@
 'use strict';
 
-var express = require('express');
+import express from 'express';
+import fs from 'fs';
+
 var image = express.Router();
-var fs = require('fs');
 
 
 module.exports = image;

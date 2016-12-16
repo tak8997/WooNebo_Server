@@ -1,14 +1,14 @@
 'use strict';
 
-var express = require('express');
+import express from 'express';
+import moment from 'moment';
+import models from '../models';
 var product = express.Router();
-var moment = require('moment');
-
-var models = require('../models');
 
 
 module.exports = product;
 
+//상품 상세 정보를 전달하는 REST
 product.get('/:id', ensureAuthentication, (req, res)=>{
     let id = req.params.id;
 
@@ -31,6 +31,7 @@ product.get('/:id', ensureAuthentication, (req, res)=>{
     });
 });
 
+//facebook의 좋아요 버튼과 동일한 기능 REST
 product.post('/:id/star', ensureAuthentication, (req, res)=>{
     let id = req.params.id;
 

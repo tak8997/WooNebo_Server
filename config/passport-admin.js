@@ -1,9 +1,11 @@
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var moment = require('moment');
-var sha256 = require('sha256');
+import passport from 'passport';
+import Local from 'passport-local';
+import moment from 'moment';
+import sha256 from 'sha256';
 
-var models = require('../models');
+import models from '../models';
+
+var LocalStrategy = Local.Strategy;
 
 
 module.exports = passport;

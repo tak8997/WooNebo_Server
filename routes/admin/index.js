@@ -1,15 +1,16 @@
 'use strict';
 
-var express = require('express');
-var moment = require('moment');
-var admin = express.Router();
-require('underscore');
+import express from 'express';
+import moment from 'moment';
+import 'underscore';
 
-var passport = require('../../config/passport-admin');
-var models = require('../../models');
-var kiosk = require('./kiosk');
-var product = require('./product');
-var media = require('./media');
+import passport from '../../config/passport-admin';
+import models from '../../models';
+import kiosk from './kiosk';
+import product from './product';
+import media from './media';
+
+var admin = express.Router();
 var redirects = {
     successRedirect: '/admins',
     failureRedirect: '/admins/login'

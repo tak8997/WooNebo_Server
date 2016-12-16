@@ -21,10 +21,20 @@
     "shortid": "^2.2.6",
     "underscore": "^1.8.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.20.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-es2017": "^6.16.0"
+  },
+  "babel": {
+      "presets": [
+          "es2015",
+          "es2017"
+      ]
+  },
   "scripts": {
-    "test": "pm2 start server.js --name woonebo --watch",
-    "start": "pm2 start server.js --name woonebo"
+    "test": "pm2 start --interpreter babel-node server.js --name woonebo --watch -- --presets es2015",
+    "start": "pm2 start --interpreter babel-node server.js --name woonebo -- --presets es2015"
   },
   "repository": {
     "type": "git",

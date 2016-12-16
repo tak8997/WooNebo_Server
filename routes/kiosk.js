@@ -1,14 +1,15 @@
 'use strict';
 
-var express = require('express');
-var kiosk = express.Router();
-var moment = require('moment');
-var request = require('request');
-var sequelize = require('sequelize');
-require('underscore');
+import express from 'express';
+import moment from 'moment';
+import request from 'request';
+import sequelize from 'sequelize';
+import 'underscore';
 
-var models = require('../models');
-var util = require('../util');
+import models from '../models';
+import util from '../util';
+
+var kiosk = express.Router();
 var gps_maxDiatance = 100;
 
 

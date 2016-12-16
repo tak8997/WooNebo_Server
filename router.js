@@ -1,10 +1,11 @@
-var express = require('express');
-var kiosk = require('./routes/kiosk');
-var product = require('./routes/product');
-var admin = require('./routes/admin');
-var user = require('./routes/user');
-var upload = require('./config/upload');
-var image = require('./config/image');
+import express from 'express';
+import kiosk from './routes/kiosk';
+import product from './routes/product';
+import admin from './routes/admin';
+import user from './routes/user';
+import upload from './config/upload';
+import image from './config/image';
+
 var router = express.Router();
 
 

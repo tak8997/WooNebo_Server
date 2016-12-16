@@ -1,10 +1,11 @@
 'use strict';
 
-var express = require('express');
-var media = express.Router();
-var moment = require('moment');
+import express from 'express';
+import moment from 'moment';
 
-var models = require('../../models');
+import models from '../../models';
+
+var media = express.Router();
 var limit = 10;
 
 

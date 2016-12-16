@@ -1,4 +1,5 @@
-var Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
+
 var options = {
     timezone: '+09:00',
     logging: false

@@ -1,12 +1,11 @@
 'use strict';
 
-var express = require('express');
+import express from 'express';
+import sha256 from 'sha256';
+import firebase from 'firebase-admin';
+import moment from 'moment';
+import models from '../models';
 var user = express.Router();
-var sha256 = require('sha256');
-var firebase = require('firebase-admin');
-var moment = require('moment');
-
-var models = require('../models');
 
 
 module.exports = user;

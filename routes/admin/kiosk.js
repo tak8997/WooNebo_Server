@@ -1,11 +1,12 @@
 'use strict';
 
-var express = require('express');
-var kiosk = express.Router();
-var moment = require('moment');
-require('underscore');
+import express from 'express';
+import moment from 'moment';
+import 'underscore';
 
-var models = require('../../models');
+import models from '../../models';
+
+var kiosk = express.Router();
 var limit = 10;
 
 
