@@ -1,4 +1,4 @@
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes)=>{
     return sequelize.define('kiosk', {
         register: DataTypes.INTEGER,
         description: DataTypes.STRING,

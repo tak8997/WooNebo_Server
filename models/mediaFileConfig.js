@@ -1,4 +1,4 @@
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes)=>{
     return sequelize.define('mediaFileConfig', {
         file_id: DataTypes.INTEGER,
         product_id: DataTypes.INTEGER,

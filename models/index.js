@@ -19,12 +19,12 @@ var models = [
     'keyword',
     'popularity'
 ];
-models.forEach(function(model) {
+models.forEach((model)=>{
     module.exports[model] = sequelize.import('./' + model);
 });
 
 //테이블 관계 정의
-(function(m) {
+((m)=>{
     m.admin.hasMany(m.kiosk, { foreignKey: 'register' });
     m.admin.hasMany(m.product, { foreignKey: 'register' });
     m.admin.hasMany(m.mediaFile, { foreignKey: 'register' });
@@ -55,10 +55,10 @@ models.forEach(function(model) {
 
 sequelize
     .authenticate()
-    .then(function(err) {
+    .then(()=>{
         console.log("DB is connected!!");
     })
-    .catch(function(err) {
+    .catch((err)=>{
         console.log("Unable to connect to the database: ", err);
     });
 

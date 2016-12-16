@@ -1,4 +1,4 @@
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes)=>{
     return sequelize.define('playInfo', {
         kiosk_id: DataTypes.INTEGER,
         file_id: DataTypes.INTEGER,

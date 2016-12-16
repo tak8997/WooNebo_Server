@@ -128,7 +128,7 @@ kiosk.get('/:id/products', (req, res)=>{
                     },
                     raw: true
                 }).then((keyword)=>{
-                    let link = `https://www.google.co.kr/?gfe_rd=cr&ei=Zk5TWPyHOqvK8gfW1ZK4Dw#q=${keyword.word}`;
+                    let link = `https://search.naver.com/search.naver?where=nexearch&query=${keyword.word}&sm=top_hty&fbm=1&ie=utf8`;
                     let result = { type: 1, reference: link };
 
                     //노출될 만한 상품이 없을 경우 전부 키워드를 통한 링크를 전송
